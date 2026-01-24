@@ -79,11 +79,11 @@ if [ -f "$CLAUDE_DIR/CLAUDE.md" ] && [ ! -L "$CLAUDE_DIR/CLAUDE.md" ]; then
     rm "$CLAUDE_DIR/CLAUDE.md"
 fi
 
-# Create symlinks
+# Create symlinks (-n flag prevents creating symlink inside existing symlinked dir)
 info "Creating symlinks..."
-ln -sf "$INSTALL_DIR/skills" "$CLAUDE_DIR/skills"
-ln -sf "$INSTALL_DIR/agents" "$CLAUDE_DIR/agents"
-ln -sf "$INSTALL_DIR/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
+ln -sfn "$INSTALL_DIR/skills" "$CLAUDE_DIR/skills"
+ln -sfn "$INSTALL_DIR/agents" "$CLAUDE_DIR/agents"
+ln -sfn "$INSTALL_DIR/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
 
 echo ""
 info "Setup complete!"
