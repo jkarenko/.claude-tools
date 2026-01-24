@@ -21,10 +21,10 @@ Personal Claude Code skills and agents, synced across machines.
 
 ```bash
 # Option 1: curl
-curl -fsSL https://raw.githubusercontent.com/jkarenko/claude-tools/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jkarenko/.claude-tools/main/setup.sh | bash
 
 # Option 2: git clone
-git clone git@github.com:jkarenko/claude-tools.git ~/.claude-tools && ~/.claude-tools/setup.sh
+git clone git@github.com:jkarenko/.claude-tools.git ~/.claude-tools && ~/.claude-tools/setup.sh
 ```
 
 The setup script will:

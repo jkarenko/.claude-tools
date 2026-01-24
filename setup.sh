@@ -2,8 +2,8 @@
 set -e
 
 # Configuration
-REPO_URL_SSH="git@github.com:jkarenko/claude-tools.git"
-REPO_URL_HTTPS="https://github.com/jkarenko/claude-tools.git"
+REPO_URL_SSH="git@github.com:jkarenko/.claude-tools.git"
+REPO_URL_HTTPS="https://github.com/jkarenko/.claude-tools.git"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_SUFFIX=".bak.$(date +%Y%m%d_%H%M%S)"
 
