@@ -26,7 +26,8 @@ Launch the orchestrator agent with the Task tool:
 ```
 Task tool:
 - subagent_type: pof-orchestrator
-- prompt: "Continue POF workflow from current state. Read .claude/context/state.json for current phase and status."
+- description: "Orchestrate POF workflow"
+- prompt: "Continue POF workflow from current state. Read .claude/context/state.json for current phase and status. User request: {user's message if any}"
 ```
 
 ## State File Location

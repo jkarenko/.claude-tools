@@ -65,7 +65,21 @@ PHASE 6: HANDOFF
 
 ## Available POF Agents
 
-Dispatch to these agents using the Task tool:
+Dispatch to these agents using the **Task tool** (MCP tool invocation, NOT a bash command).
+
+**Correct invocation:**
+```
+Task tool with:
+  - subagent_type: "pof-implementation-planner"
+  - prompt: "Your detailed instructions here..."
+  - description: "Short description of the task"
+```
+
+**WRONG - do NOT run as bash:**
+```bash
+# This will fail - there is no 'task' CLI command
+task pof-implementation-planner --task "..."
+```
 
 | Agent | Use For |
 |-------|---------|
@@ -158,3 +172,43 @@ At each CHECKPOINT:
 - **Respect verbose mode**: Check state.json for verbosity setting
 
 Always begin by reading `.claude/context/state.json` to understand current workflow state. If it doesn't exist, you're starting fresh.
+
+## Story Mode
+
+When `state.json` contains `"mode": "story"`, you're in story mode - a lighter workflow for adding features to an existing project.
+
+**Story mode phases** (subset of full workflow):
+```
+PHASE 4: IMPLEMENTATION (story-focused)
+├── 4.1 Implementation from approved plan
+├── 4.2 Iterative development
+├── 4.3 Security review
+└── 4.4 Story completion → COMMIT + optional ADR
+
+PHASE 5: VERIFICATION (optional)
+├── 5.1 Test execution
+└── 5.2 Story acceptance criteria check
+```
+
+**Story mode context files**:
+- `.claude/context/current-story.md` - The active user story
+- `.claude/context/implementation-plan.md` - Approved plan for the story
+
+**Story completion**:
+1. Verify all acceptance criteria met
+2. Create conventional commit(s)
+3. Write ADR if architectural decisions were made
+4. Archive story to `.claude/context/stories/{date}-{slug}.md`
+5. Update `current-story.md` status to `done`
+6. Report completion summary to user
+
+**Transitioning back**:
+After story completion, set state back to idle:
+```json
+{
+  "currentPhase": "idle",
+  "status": "ready",
+  "mode": null,
+  "lastStory": "{story-slug}"
+}
+```

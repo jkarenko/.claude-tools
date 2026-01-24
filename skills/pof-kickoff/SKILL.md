@@ -120,6 +120,24 @@ Before proceeding to Phase 1, ask:
 
 After approval, use `/pof:orchestrate` to start the orchestrator agent which will manage the remaining phases.
 
+## After Kickoff Completes
+
+Include this guidance when the full workflow finishes:
+
+```markdown
+## What's Next?
+
+Your project is set up. For future development:
+
+| To do this... | Use this command |
+|---------------|------------------|
+| Add a new feature | `/pof:story As a user, I want...` |
+| Quick bug fix | `/pof:story --quick Fix the...` |
+| See all commands | `/pof:guide` |
+
+Stories skip the setup phases and go straight to design → plan → implement.
+```
+
 ## Tips
 
 - If user provides extensive context upfront, acknowledge and proceed faster
