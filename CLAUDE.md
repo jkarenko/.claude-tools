@@ -1,0 +1,5 @@
+- Do not add any "generated using" type of info in commit message
+- ALWAYS use conventional commit format with mandatory scope: `type(scope): description`
+  - Valid types: feat, fix, docs, style, refactor, perf, test, chore, build, ci
+  - Scope MUST describe what part of the codebase is affected (e.g., frontend, backend, graph, api)
+  - Example: `feat(graph): add jitter series on right Y-axis`
