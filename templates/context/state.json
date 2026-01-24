@@ -1,0 +1,10 @@
+{
+  "currentPhase": "0.1",
+  "status": "initializing",
+  "blockers": [],
+  "lastCheckpoint": null,
+  "progressStyle": "inline-persistent",
+  "verbose": false,
+  "startedAt": null,
+  "pausedAt": null
+}
