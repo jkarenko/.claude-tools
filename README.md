@@ -17,14 +17,16 @@ Personal Claude Code skills and agents, synced across machines.
 ## Setup on a new machine
 
 ```bash
-# Clone the repo
-git clone git@github.com:USERNAME/claude-tools.git ~/.claude-tools
-
-# Create symlinks
-ln -sf ~/.claude-tools/skills ~/.claude/skills
-ln -sf ~/.claude-tools/agents ~/.claude/agents
-ln -sf ~/.claude-tools/CLAUDE.md ~/.claude/CLAUDE.md
+# One-liner: clone and run setup
+git clone git@github.com:jkarenko/claude-tools.git ~/.claude-tools && ~/.claude-tools/setup.sh
 ```
+
+The setup script will:
+- Copy any existing local skills/agents into the repo (skips duplicates)
+- Create symlinks from `~/.claude/` to the repo
+- Warn you if there are new files to commit
+
+To update later: `cd ~/.claude-tools && git pull`
 
 ## Current contents
 
