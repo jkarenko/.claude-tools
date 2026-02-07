@@ -34,14 +34,25 @@ Read all context files:
 - `.claude/context/implementation-plan.md` - Implementation plan (if exists)
 - `.claude/context/current-story.md` - Active story (if in story mode)
 
-### 3. Start Dashboard (optional)
+### 3. Start Dashboard and New Session
+
+Generate a **new** session ID for this conversation (e.g., `pof-b7e2`) — even if the old state has a `sessionId`, each conversation gets its own. Update `state.json` with the new `sessionId`.
 
 ```bash
-curl -s http://localhost:3456/health > /dev/null 2>&1 || \
+curl -sf http://localhost:3456/health > /dev/null 2>&1 || \
   bun run ~/.claude-tools/dashboard/server.ts > /dev/null 2>&1 &
 ```
 
 If dashboard is already running, skip. If it starts, inform the user.
+
+Register the session with the dashboard:
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"orchestrator","session":"<new sessionId>","status":"started","message":"Resuming from phase <X.X>","detail":"project:<project name from state>"}' \
+  > /dev/null 2>&1 || true
+```
 
 ### 4. Present Resume Summary
 

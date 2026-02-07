@@ -49,15 +49,26 @@ Options:
 2. Provide architecture context now (stack, patterns, etc.)
 ```
 
-### Step 2.5: Start Dashboard (if not running)
+### Step 2.5: Start Dashboard and Session
 
-Attempt to start the dashboard for real-time monitoring. Silently skip if it's already running or can't start:
+Generate a **new** session ID for this conversation (e.g., `pof-c4d1`). If `state.json` exists, update its `sessionId`. If not, store it for when the state file is created in Step 3.
+
+Start the dashboard if not already running:
 
 ```bash
 curl -sf http://localhost:3456/health > /dev/null 2>&1 || bun run ~/.claude-tools/dashboard/server.ts > /dev/null 2>&1 &
 ```
 
 If it starts, inform the user: "Dashboard running at http://localhost:3456"
+
+Register the session:
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"orchestrator","session":"<sessionId>","status":"started","message":"Story started","detail":"project:<project name from context>"}' \
+  > /dev/null 2>&1 || true
+```
 
 ### Step 3: Create Story Context
 

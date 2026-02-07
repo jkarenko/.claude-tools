@@ -9,7 +9,7 @@ You are now driving the POF workflow directly in this conversation. You dispatch
 
 ## Step 1: Read State
 
-Read `.claude/context/state.json` to determine current phase. Also read whichever context files are relevant:
+Read `.claude/context/state.json` to determine current phase. Note the `sessionId` — you'll need it for all dashboard reports and agent dispatches. Also read whichever context files are relevant:
 
 - `.claude/context/requirements.md` — always
 - `.claude/context/decisions.json` — always
@@ -21,16 +21,18 @@ If `state.mode === "story"`, skip to **Phase 4** (story mode only runs implement
 
 ## Step 2: Dashboard Report
 
-Report your progress throughout. This silently no-ops if the dashboard isn't running:
+Report your progress throughout. Use the `sessionId` from `state.json` in every report. This silently no-ops if the dashboard isn't running:
 
 ```bash
 curl -s -X POST http://localhost:3456/api/status \
   -H 'Content-Type: application/json' \
-  -d '{"agent":"orchestrator","phase":"PHASE","status":"working","message":"MSG"}' \
+  -d '{"agent":"orchestrator","session":"<sessionId>","phase":"PHASE","status":"working","message":"MSG"}' \
   > /dev/null 2>&1 || true
 ```
 
 Report at every phase transition and agent dispatch.
+
+**When dispatching agents**, always include the session ID in the dispatch prompt so the agent can use it for its own dashboard reports: `"Dashboard session ID: <sessionId>"`
 
 ## Step 3: Execute Current Phase
 
@@ -361,6 +363,7 @@ After each step, update `.claude/context/state.json`:
 {
   "currentPhase": "X.X",
   "status": "in_progress",
+  "sessionId": "<current session ID>",
   "lastCheckpoint": "X.X",
   "blockers": [],
   "progressStyle": "inline-persistent",

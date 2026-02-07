@@ -48,11 +48,14 @@ Create the POF context structure:
 mkdir -p .claude/context docs/adr
 ```
 
+Generate a short session ID for dashboard routing: `pof-` followed by 4 random hex chars (e.g., `pof-a3f8`).
+
 Initialize `.claude/context/state.json`:
 ```json
 {
   "currentPhase": "0.1",
   "status": "initializing",
+  "sessionId": "<generated session ID, e.g. pof-a3f8>",
   "blockers": [],
   "lastCheckpoint": null,
   "progressStyle": "inline-persistent",
@@ -81,6 +84,15 @@ bun run ~/.claude-tools/dashboard/server.ts > /dev/null 2>&1 &
 If the dashboard starts, inform the user: "Dashboard running at http://localhost:3456"
 
 If it fails (port busy, bun not installed), silently continue — the dashboard is purely additive.
+
+Send an initial status report with the project name so the dashboard can label this session:
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"orchestrator","session":"<sessionId>","status":"started","message":"Kickoff started","detail":"project:<project name>"}' \
+  > /dev/null 2>&1 || true
+```
 
 ### Step 6: Present Phase Outline
 

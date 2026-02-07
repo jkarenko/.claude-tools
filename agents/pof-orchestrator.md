@@ -115,16 +115,17 @@ Maintain these files in `.claude/context/`:
 
 ## Dashboard Reporting
 
-Report progress to the POF dashboard (silently no-ops if not running):
+Report progress to the POF dashboard (silently no-ops if not running).
+Use the `sessionId` from `state.json` in all reports.
 
 ```bash
 curl -s -X POST http://localhost:3456/api/status \
   -H 'Content-Type: application/json' \
-  -d '{"agent":"orchestrator","phase":"PHASE","status":"STATUS","message":"MSG"}' \
+  -d '{"agent":"orchestrator","session":"SESSION_ID","phase":"PHASE","status":"STATUS","message":"MSG"}' \
   > /dev/null 2>&1 || true
 ```
 
-Report at every phase transition and agent dispatch.
+Report at every phase transition and agent dispatch. When dispatching agents, include `Dashboard session ID: <sessionId>` in the prompt.
 
 ## Commit Discipline
 

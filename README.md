@@ -208,7 +208,7 @@ All agents report progress to the dashboard via `curl` (silently no-ops if dashb
 
 ### Dashboard
 
-Real-time monitoring UI for the POF workflow.
+Real-time monitoring UI for the POF workflow. Supports multiple simultaneous sessions — each Claude Code conversation gets its own session ID, and the dashboard shows all active sessions in a sidebar.
 
 ```bash
 # Start manually (kickoff starts it automatically)
@@ -219,18 +219,21 @@ open http://localhost:3456
 ```
 
 Features:
-- Phase progress stepper
+- **Multi-session sidebar** — switch between active sessions, see project name, phase, and agent count at a glance
+- Phase progress stepper per session
 - Agent cards with live status and colors
 - Activity log with timestamps
 - Question/answer panel for async two-way communication
 - Auto-reconnecting SSE stream
+- Stale sessions auto-expire after 4 hours of inactivity
 
-API endpoints:
+API endpoints (all accept `session` field for routing):
 - `POST /api/status` — agent progress reports
 - `POST /api/question` — post a question for the user
 - `POST /api/answer` — user answers from the UI
 - `GET /api/events` — SSE stream for real-time updates
-- `GET /api/state` — full state snapshot
+- `GET /api/state?session=ID` — full state snapshot
+- `GET /api/sessions` — summary of all active sessions
 - `GET /health` — uptime check
 
 ### After Completion
@@ -245,7 +248,7 @@ POF maintains state in `.claude/context/`:
 
 | File | Purpose |
 |------|---------|
-| `state.json` | Current phase, status, mode |
+| `state.json` | Current phase, status, mode, session ID |
 | `decisions.json` | Recorded architectural decisions |
 | `requirements.md` | Project requirements |
 | `architecture.md` | Approved architecture |

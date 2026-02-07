@@ -26,6 +26,7 @@
       --purple: #a855f7;
       --mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', monospace;
       --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --sidebar-w: 240px;
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -36,6 +37,8 @@
       font-family: var(--sans);
       line-height: 1.5;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     /* --- Header --- */
@@ -108,12 +111,130 @@
     .status-dot.connected { background: var(--green); box-shadow: 0 0 6px rgba(34, 197, 94, 0.4); }
     .status-dot.disconnected { background: var(--red); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
 
-    .duration {
-      font-family: var(--mono);
-      font-size: 13px;
+    /* --- App Layout (sidebar + main) --- */
+
+    .app-layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* --- Sidebar --- */
+
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--bg-1);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 14px 16px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
       color: var(--text-2);
-      min-width: 48px;
-      text-align: right;
+    }
+
+    .session-list {
+      flex: 1;
+      padding: 0 8px;
+    }
+
+    .session-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      margin-bottom: 4px;
+      border: 1px solid transparent;
+    }
+
+    .session-item:hover {
+      background: var(--bg-2);
+    }
+
+    .session-item.active {
+      background: var(--bg-2);
+      border-color: var(--accent);
+    }
+
+    .session-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-0);
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .session-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text-2);
+    }
+
+    .session-phase {
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      background: rgba(217, 70, 239, 0.12);
+      color: var(--accent);
+    }
+
+    .session-agents {
+      color: var(--text-2);
+    }
+
+    .session-badge {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--yellow);
+      animation: pulse 1.5s infinite;
+      flex-shrink: 0;
+    }
+
+    .sidebar-empty {
+      padding: 24px 16px;
+      text-align: center;
+      color: var(--text-2);
+      font-size: 12px;
+    }
+
+    /* --- Main Content --- */
+
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .no-session {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--text-2);
+      font-size: 14px;
+    }
+
+    .no-session .empty-icon {
+      font-size: 36px;
+      color: var(--border-bright);
+      animation: glow 3s ease-in-out infinite;
     }
 
     /* --- Phase Stepper --- */
@@ -186,12 +307,42 @@
     .step.current .step-label { color: var(--accent); }
     .step.complete .step-label { color: var(--green); }
 
-    /* --- Main Layout --- */
+    /* --- Session Detail Layout --- */
 
-    main {
+    .session-detail {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 24px 48px;
+      width: 100%;
+    }
+
+    .session-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 0 4px;
+    }
+
+    .session-title h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-0);
+    }
+
+    .session-title .session-id {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-2);
+      padding: 2px 8px;
+      background: var(--bg-3);
+      border-radius: 4px;
+    }
+
+    .session-title .duration {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-2);
+      margin-left: auto;
     }
 
     .section-header {
@@ -202,7 +353,7 @@
       padding-top: 8px;
     }
 
-    .section-header h2 {
+    .section-header h3 {
       font-size: 13px;
       font-weight: 600;
       text-transform: uppercase;
@@ -479,13 +630,6 @@
 
     .log-message { color: var(--text-1); }
 
-    .log-status {
-      flex-shrink: 0;
-      font-size: 11px;
-      padding: 0 5px;
-      border-radius: 3px;
-    }
-
     /* --- Empty State --- */
 
     .empty-state {
@@ -524,14 +668,19 @@
 
     /* --- Responsive --- */
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 180px; }
       header { padding: 12px 16px; }
-      main { padding: 0 16px 32px; }
-      .phase-bar { padding: 16px 8px; gap: 0; }
+      .session-detail { padding: 0 16px 32px; }
+      .phase-bar { padding: 16px 8px; }
       .step-line { width: 20px; }
       .step-dot { width: 24px; height: 24px; font-size: 10px; }
       .step-label { font-size: 9px; }
       .agents-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      .sidebar { display: none; }
     }
   </style>
 </head>
@@ -546,43 +695,25 @@
         <span class="status-dot disconnected" id="connectionStatus"></span>
         <span id="connectionText">Connecting</span>
       </div>
-      <span class="duration" id="duration">00:00</span>
     </div>
   </header>
 
-  <nav class="phase-bar" id="phaseBar"></nav>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">Sessions</div>
+      <div class="session-list" id="sessionList">
+        <div class="sidebar-empty" id="sidebarEmpty">No active sessions</div>
+      </div>
+    </aside>
 
-  <main>
-    <section class="agents-section">
-      <div class="section-header">
-        <h2>Agents</h2>
-        <span class="badge" id="agentCount">0 active</span>
+    <div class="main-content" id="mainContent">
+      <div class="no-session" id="noSession">
+        <span class="empty-icon">&#9671;</span>
+        <span>Waiting for sessions...</span>
+        <span style="font-size:12px;color:var(--text-2)">Sessions appear when agents report activity</span>
       </div>
-      <div class="agents-grid" id="agentsGrid">
-        <div class="empty-state" id="agentsEmpty">
-          <span class="empty-icon">&#9671;</span>
-          <span>Waiting for agent activity...</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="questions-section" id="questionsSection" style="display:none">
-      <div class="section-header">
-        <h2>Questions</h2>
-        <span class="badge pulse" id="questionCount">0</span>
-      </div>
-      <div id="questionsList"></div>
-    </section>
-
-    <section class="log-section">
-      <div class="section-header">
-        <h2>Activity</h2>
-      </div>
-      <div class="log-scroll" id="logScroll">
-        <div id="logEntries"></div>
-      </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <script>
     // --- Configuration ---
@@ -594,6 +725,7 @@
       'ux-designer':            '#a855f7',
       'implementation-planner': '#f97316',
       'git-committer':          '#22c55e',
+      'test-writer':            '#06b6d4',
       'scaffolder':             '#06b6d4',
       'test-runner':            '#22c55e',
       'security-reviewer':      '#ef4444',
@@ -615,19 +747,13 @@
 
     // --- State ---
 
-    const state = {
-      agents: {},
-      questions: [],
-      log: [],
-      connected: false,
-      startedAt: null,
-      currentPhase: '0',
-    };
+    const sessions = {};  // { sessionId: { agents, questions, log, startedAt, project, currentPhase } }
+    let activeSessionId = null;
+    let connected = false;
 
     // --- DOM refs ---
 
     const $ = (id) => document.getElementById(id);
-    const els = {};
 
     // --- SSE Connection ---
 
@@ -635,100 +761,141 @@
 
     function connect() {
       if (eventSource) eventSource.close();
-
       eventSource = new EventSource('/api/events');
 
       eventSource.addEventListener('init', (e) => {
         const data = JSON.parse(e.data);
-        state.agents = data.agents || {};
-        state.questions = data.questions || [];
-        state.log = data.log || [];
-        state.startedAt = data.startedAt;
-        state.connected = true;
-        inferPhase();
+        // Load all sessions from server
+        for (const [id, sData] of Object.entries(data.sessions || {})) {
+          sessions[id] = {
+            agents: sData.agents || {},
+            questions: sData.questions || [],
+            log: sData.log || [],
+            startedAt: sData.startedAt,
+            project: sData.project,
+            currentPhase: sData.currentPhase || '0',
+            activeAgents: sData.activeAgents || 0,
+            pendingQuestions: sData.pendingQuestions || 0,
+          };
+        }
+        connected = true;
+        // Auto-select first session if none selected
+        const ids = Object.keys(sessions);
+        if (!activeSessionId && ids.length > 0) activeSessionId = ids[0];
         renderAll();
       });
 
       eventSource.addEventListener('status', (e) => {
         const update = JSON.parse(e.data);
-        state.agents[update.agent] = update;
-        state.log.push(update);
-        if (update.phase) state.currentPhase = update.phase.split('.')[0];
-        renderAgent(update.agent);
-        appendLogEntry(update);
-        renderPhases();
-        updateAgentCount();
+        const sid = update.session || 'default';
+        ensureSession(sid);
+        sessions[sid].agents[update.agent] = update;
+        sessions[sid].log.push(update);
+        if (update.phase) {
+          const p = update.phase.split('.')[0];
+          if (parseInt(p) > parseInt(sessions[sid].currentPhase || '0')) {
+            sessions[sid].currentPhase = p;
+          }
+        }
+        renderSidebar();
+        if (sid === activeSessionId) {
+          renderAgent(update.agent);
+          appendLogEntry(update);
+          renderPhases();
+          updateAgentCount();
+        }
       });
 
       eventSource.addEventListener('question', (e) => {
         const q = JSON.parse(e.data);
-        state.questions.push(q);
-        renderQuestions();
+        const sid = q.session || 'default';
+        ensureSession(sid);
+        sessions[sid].questions.push(q);
+        renderSidebar();
+        if (sid === activeSessionId) renderQuestions();
       });
 
       eventSource.addEventListener('answer', (e) => {
         const answered = JSON.parse(e.data);
-        const idx = state.questions.findIndex(q => q.id === answered.id);
-        if (idx >= 0) state.questions[idx] = answered;
-        renderQuestions();
+        const sid = answered.session || 'default';
+        if (sessions[sid]) {
+          const idx = sessions[sid].questions.findIndex(q => q.id === answered.id);
+          if (idx >= 0) sessions[sid].questions[idx] = answered;
+          renderSidebar();
+          if (sid === activeSessionId) renderQuestions();
+        }
       });
 
-      eventSource.addEventListener('reset', (e) => {
+      eventSource.addEventListener('session-new', (e) => {
         const data = JSON.parse(e.data);
-        state.agents = {};
-        state.questions = [];
-        state.log = [];
-        state.startedAt = data.startedAt;
-        state.currentPhase = '0';
+        ensureSession(data.id);
+        if (!activeSessionId) {
+          activeSessionId = data.id;
+          renderAll();
+        } else {
+          renderSidebar();
+        }
+      });
+
+      eventSource.addEventListener('session-removed', (e) => {
+        const data = JSON.parse(e.data);
+        delete sessions[data.id];
+        if (activeSessionId === data.id) {
+          const ids = Object.keys(sessions);
+          activeSessionId = ids.length > 0 ? ids[0] : null;
+        }
+        renderAll();
+      });
+
+      eventSource.addEventListener('reset', () => {
+        for (const k of Object.keys(sessions)) delete sessions[k];
+        activeSessionId = null;
         renderAll();
       });
 
       eventSource.addEventListener('shutdown', () => {
-        state.connected = false;
+        connected = false;
         renderConnectionStatus();
       });
 
       eventSource.onopen = () => {
-        state.connected = true;
+        connected = true;
         renderConnectionStatus();
       };
 
       eventSource.onerror = () => {
-        state.connected = false;
+        connected = false;
         renderConnectionStatus();
         eventSource.close();
         setTimeout(connect, 3000);
       };
     }
 
-    // --- Inference ---
-
-    function inferPhase() {
-      let maxPhase = 0;
-      for (const a of Object.values(state.agents)) {
-        if (a.phase) {
-          const p = parseInt(a.phase.split('.')[0]);
-          if (p > maxPhase) maxPhase = p;
-        }
+    function ensureSession(id) {
+      if (!sessions[id]) {
+        sessions[id] = {
+          agents: {},
+          questions: [],
+          log: [],
+          startedAt: new Date().toISOString(),
+          project: null,
+          currentPhase: '0',
+        };
       }
-      state.currentPhase = String(maxPhase);
     }
 
     // --- Render Functions ---
 
     function renderAll() {
       renderConnectionStatus();
-      renderPhases();
-      renderAgents();
-      renderLog();
-      renderQuestions();
-      updateAgentCount();
+      renderSidebar();
+      renderSessionDetail();
     }
 
     function renderConnectionStatus() {
-      const dot = els.connectionStatus;
-      const text = els.connectionText;
-      if (state.connected) {
+      const dot = $('connectionStatus');
+      const text = $('connectionText');
+      if (connected) {
         dot.className = 'status-dot connected';
         text.textContent = 'Connected';
       } else {
@@ -737,9 +904,108 @@
       }
     }
 
+    function renderSidebar() {
+      const list = $('sessionList');
+      const ids = Object.keys(sessions);
+
+      if (ids.length === 0) {
+        list.innerHTML = '<div class="sidebar-empty">No active sessions</div>';
+        return;
+      }
+
+      list.innerHTML = ids.map(id => {
+        const s = sessions[id];
+        const isActive = id === activeSessionId;
+        const name = s.project || id;
+        const phase = s.currentPhase || '0';
+        const activeCount = Object.values(s.agents).filter(
+          a => a.status === 'working' || a.status === 'started'
+        ).length;
+        const pending = s.questions.filter(q => !q.answered).length;
+
+        return `<div class="session-item${isActive ? ' active' : ''}" onclick="selectSession('${esc(id)}')">
+          <div class="session-name">${esc(name)}</div>
+          <div class="session-meta">
+            <span class="session-phase">P${phase}</span>
+            <span class="session-agents">${activeCount > 0 ? activeCount + ' active' : Object.keys(s.agents).length + ' agents'}</span>
+            ${pending > 0 ? '<span class="session-badge" title="' + pending + ' pending question(s)"></span>' : ''}
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderSessionDetail() {
+      const main = $('mainContent');
+      const noSession = $('noSession');
+
+      if (!activeSessionId || !sessions[activeSessionId]) {
+        main.innerHTML = `<div class="no-session">
+          <span class="empty-icon">&#9671;</span>
+          <span>Waiting for sessions...</span>
+          <span style="font-size:12px;color:var(--text-2)">Sessions appear when agents report activity</span>
+        </div>`;
+        return;
+      }
+
+      const s = sessions[activeSessionId];
+      const name = s.project || activeSessionId;
+
+      main.innerHTML = `
+        <nav class="phase-bar" id="phaseBar"></nav>
+        <div class="session-detail">
+          <div class="session-title">
+            <h2>${esc(name)}</h2>
+            <span class="session-id">${esc(activeSessionId)}</span>
+            <span class="duration" id="duration">00:00</span>
+          </div>
+
+          <section class="agents-section">
+            <div class="section-header">
+              <h3>Agents</h3>
+              <span class="badge" id="agentCount">0</span>
+            </div>
+            <div class="agents-grid" id="agentsGrid">
+              <div class="empty-state" id="agentsEmpty">
+                <span class="empty-icon">&#9671;</span>
+                <span>Waiting for agent activity...</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="questions-section" id="questionsSection" style="display:none">
+            <div class="section-header">
+              <h3>Questions</h3>
+              <span class="badge pulse" id="questionCount">0</span>
+            </div>
+            <div id="questionsList"></div>
+          </section>
+
+          <section class="log-section">
+            <div class="section-header">
+              <h3>Activity</h3>
+            </div>
+            <div class="log-scroll" id="logScroll">
+              <div id="logEntries"></div>
+            </div>
+          </section>
+        </div>
+      `;
+
+      renderPhases();
+      renderAgents();
+      renderLog();
+      renderQuestions();
+      updateAgentCount();
+      updateDuration();
+    }
+
     function renderPhases() {
-      const cur = parseInt(state.currentPhase) || 0;
-      els.phaseBar.innerHTML = PHASES.map((phase, i) => {
+      const bar = $('phaseBar');
+      if (!bar || !activeSessionId) return;
+      const s = sessions[activeSessionId];
+      const cur = parseInt(s.currentPhase) || 0;
+
+      bar.innerHTML = PHASES.map((phase, i) => {
         const cls = i < cur ? 'step complete' : i === cur ? 'step current' : 'step';
         const dot = i < cur ? '\u2713' : String(i);
         const line = i < PHASES.length - 1
@@ -750,28 +1016,37 @@
     }
 
     function renderAgents() {
-      const names = Object.keys(state.agents);
+      const grid = $('agentsGrid');
+      if (!grid || !activeSessionId) return;
+      const s = sessions[activeSessionId];
+      const names = Object.keys(s.agents);
+
       if (names.length === 0) {
-        els.agentsGrid.innerHTML = '<div class="empty-state" id="agentsEmpty"><span class="empty-icon">&#9671;</span><span>Waiting for agent activity...</span></div>';
+        grid.innerHTML = '<div class="empty-state" id="agentsEmpty"><span class="empty-icon">&#9671;</span><span>Waiting for agent activity...</span></div>';
         return;
       }
-      els.agentsGrid.innerHTML = '';
+      grid.innerHTML = '';
       for (const name of names) renderAgent(name);
     }
 
     function renderAgent(name) {
-      const data = state.agents[name];
+      if (!activeSessionId) return;
+      const s = sessions[activeSessionId];
+      const data = s.agents[name];
       if (!data) return;
+
+      const grid = $('agentsGrid');
+      if (!grid) return;
 
       const color = AGENT_COLORS[name] || '#71717a';
       const status = data.status || 'working';
 
-      let card = els.agentsGrid.querySelector(`[data-agent="${name}"]`);
+      let card = grid.querySelector(`[data-agent="${name}"]`);
       if (!card) {
         card = document.createElement('div');
         card.className = 'agent-card';
         card.dataset.agent = name;
-        els.agentsGrid.appendChild(card);
+        grid.appendChild(card);
         const empty = $('agentsEmpty');
         if (empty) empty.remove();
       }
@@ -798,6 +1073,10 @@
     }
 
     function appendLogEntry(update) {
+      const el = $('logEntries');
+      const scroll = $('logScroll');
+      if (!el || !scroll) return;
+
       const color = AGENT_COLORS[update.agent] || '#71717a';
       const entry = document.createElement('div');
       entry.className = 'log-entry';
@@ -808,33 +1087,41 @@
         <span class="log-agent" style="color:${color}">${esc(update.agent)}</span>
         <span class="log-message">${esc(update.message)}</span>
       `;
-      els.logEntries.appendChild(entry);
-      els.logScroll.scrollTop = els.logScroll.scrollHeight;
+      el.appendChild(entry);
+      scroll.scrollTop = scroll.scrollHeight;
 
-      while (els.logEntries.children.length > 300) {
-        els.logEntries.removeChild(els.logEntries.firstChild);
+      while (el.children.length > 300) {
+        el.removeChild(el.firstChild);
       }
     }
 
     function renderLog() {
-      els.logEntries.innerHTML = '';
-      for (const entry of state.log) appendLogEntry(entry);
+      const el = $('logEntries');
+      if (!el || !activeSessionId) return;
+      el.innerHTML = '';
+      const s = sessions[activeSessionId];
+      for (const entry of s.log) appendLogEntry(entry);
     }
 
     function renderQuestions() {
-      const pending = state.questions.filter(q => !q.answered);
-      const answered = state.questions.filter(q => q.answered);
+      const section = $('questionsSection');
+      const list = $('questionsList');
+      const countEl = $('questionCount');
+      if (!section || !list || !activeSessionId) return;
 
-      if (state.questions.length === 0) {
-        els.questionsSection.style.display = 'none';
+      const s = sessions[activeSessionId];
+      const pending = s.questions.filter(q => !q.answered);
+      const answered = s.questions.filter(q => q.answered);
+
+      if (s.questions.length === 0) {
+        section.style.display = 'none';
         return;
       }
 
-      els.questionsSection.style.display = '';
-      els.questionCount.textContent = pending.length || '';
+      section.style.display = '';
+      if (countEl) countEl.textContent = pending.length || '';
 
       let html = '';
-
       for (const q of pending) {
         const color = AGENT_COLORS[q.agent] || '#71717a';
         html += `<div class="question-card" data-qid="${q.id}">
@@ -859,18 +1146,27 @@
         </div>`;
       }
 
-      els.questionsList.innerHTML = html;
+      list.innerHTML = html;
     }
 
     function updateAgentCount() {
-      const total = Object.keys(state.agents).length;
-      const active = Object.values(state.agents).filter(
+      const el = $('agentCount');
+      if (!el || !activeSessionId) return;
+      const s = sessions[activeSessionId];
+      const total = Object.keys(s.agents).length;
+      const active = Object.values(s.agents).filter(
         a => a.status === 'working' || a.status === 'started'
       ).length;
-      els.agentCount.textContent = active > 0 ? `${active} active` : `${total} total`;
+      el.textContent = active > 0 ? `${active} active` : `${total} total`;
     }
 
     // --- Actions ---
+
+    window.selectSession = function(id) {
+      activeSessionId = id;
+      renderSidebar();
+      renderSessionDetail();
+    };
 
     window.selectOpt = function(qid, btn) {
       const input = $('ans-' + qid);
@@ -919,30 +1215,20 @@
     }
 
     function updateDuration() {
-      if (!state.startedAt) { els.duration.textContent = '00:00'; return; }
-      const s = Math.floor((Date.now() - new Date(state.startedAt).getTime()) / 1000);
+      const el = $('duration');
+      if (!el || !activeSessionId || !sessions[activeSessionId]) return;
+      const start = sessions[activeSessionId].startedAt;
+      if (!start) { el.textContent = '00:00'; return; }
+      const s = Math.floor((Date.now() - new Date(start).getTime()) / 1000);
       const mm = Math.floor(s / 60).toString().padStart(2, '0');
       const ss = (s % 60).toString().padStart(2, '0');
       const h = Math.floor(s / 3600);
-      els.duration.textContent = h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+      el.textContent = h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
     }
 
     // --- Initialize ---
 
     document.addEventListener('DOMContentLoaded', () => {
-      els.connectionStatus = $('connectionStatus');
-      els.connectionText = $('connectionText');
-      els.duration = $('duration');
-      els.phaseBar = $('phaseBar');
-      els.agentsGrid = $('agentsGrid');
-      els.agentCount = $('agentCount');
-      els.logEntries = $('logEntries');
-      els.logScroll = $('logScroll');
-      els.questionsSection = $('questionsSection');
-      els.questionsList = $('questionsList');
-      els.questionCount = $('questionCount');
-
-      renderPhases();
       connect();
       setInterval(updateDuration, 1000);
 

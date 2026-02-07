@@ -80,11 +80,12 @@ When triggered, you will receive decision context. Extract the key architectural
 ## Dashboard Reporting
 
 Report progress to the POF dashboard (silently no-ops if not running):
+Use the session ID provided in your dispatch prompt (look for `Dashboard session ID: XXX`).
 
 ```bash
 curl -s -X POST http://localhost:3456/api/status \
   -H 'Content-Type: application/json' \
-  -d '{"agent":"adr-writer","status":"STATUS","message":"MSG"}' \
+  -d '{"session":"SESSION_ID","agent":"adr-writer","status":"STATUS","message":"MSG"}' \
   > /dev/null 2>&1 || true
 ```
 
