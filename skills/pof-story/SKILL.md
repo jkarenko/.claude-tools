@@ -49,6 +49,16 @@ Options:
 2. Provide architecture context now (stack, patterns, etc.)
 ```
 
+### Step 2.5: Start Dashboard (if not running)
+
+Attempt to start the dashboard for real-time monitoring. Silently skip if it's already running or can't start:
+
+```bash
+curl -sf http://localhost:3456/health > /dev/null 2>&1 || bun run ~/.claude-tools/dashboard/server.ts > /dev/null 2>&1 &
+```
+
+If it starts, inform the user: "Dashboard running at http://localhost:3456"
+
 ### Step 3: Create Story Context
 
 Write the story to `.claude/context/current-story.md`:
