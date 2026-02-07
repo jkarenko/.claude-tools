@@ -926,13 +926,14 @@
     function getProjects() {
       const projects = {};
       for (const [id, session] of Object.entries(sessions)) {
-        const pid = session.projectId || session.project || 'unknown';
+        // Group by projectId first, then by project name
+        const pid = session.projectId || session.project || id;
         if (!projects[pid]) {
-          projects[pid] = { id: pid, name: session.project || pid, sessions: {} };
+          projects[pid] = { id: pid, name: session.project || session.storyTitle || id, sessions: {} };
         }
         projects[pid].sessions[id] = session;
-        // Use the best name available
-        if (session.project && session.project !== pid) {
+        // Prefer a real project name over the ID
+        if (session.project) {
           projects[pid].name = session.project;
         }
       }
@@ -1023,6 +1024,9 @@
         sessions[sid].agents[update.agent] = update;
         sessions[sid].log.push(update);
         // Update session-level fields from the status update
+        if (update.detail && update.detail.startsWith('project:')) {
+          sessions[sid].project = update.detail.replace('project:', '').trim();
+        }
         if (update.projectId) sessions[sid].projectId = update.projectId;
         if (update.storyTitle) sessions[sid].storyTitle = update.storyTitle;
         if (update.storyStatus) sessions[sid].storyStatus = update.storyStatus;
