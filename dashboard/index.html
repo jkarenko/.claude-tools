@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POF Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%23d946ef'>&#9670;</text></svg>">
+  <style>
+    :root {
+      --bg-0: #09090b;
+      --bg-1: #0f0f14;
+      --bg-2: #16161e;
+      --bg-3: #1e1e28;
+      --border: #27272a;
+      --border-bright: #3f3f46;
+      --text-0: #fafafa;
+      --text-1: #a1a1aa;
+      --text-2: #52525b;
+      --accent: #d946ef;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --cyan: #06b6d4;
+      --orange: #f97316;
+      --purple: #a855f7;
+      --mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg-0);
+      color: var(--text-0);
+      font-family: var(--sans);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* --- Header --- */
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 24px;
+      background: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
+      opacity: 0.25;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      color: var(--accent);
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    h1 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    h1 span { color: var(--text-2); font-weight: 400; }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .status-dot.connected { background: var(--green); box-shadow: 0 0 6px rgba(34, 197, 94, 0.4); }
+    .status-dot.disconnected { background: var(--red); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
+
+    .duration {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-2);
+      min-width: 48px;
+      text-align: right;
+    }
+
+    /* --- Phase Stepper --- */
+
+    .phase-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 24px 20px;
+      gap: 0;
+      background: linear-gradient(180deg, rgba(217, 70, 239, 0.025) 0%, transparent 100%);
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--mono);
+      border: 2px solid var(--border);
+      background: var(--bg-1);
+      color: var(--text-2);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .step.complete .step-dot {
+      background: var(--green);
+      border-color: var(--green);
+      color: #000;
+    }
+
+    .step.current .step-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(217, 70, 239, 0.35);
+      animation: glow 2.5s ease-in-out infinite;
+    }
+
+    .step-line {
+      width: 40px;
+      height: 2px;
+      background: var(--border);
+      margin-bottom: 26px;
+      transition: background 0.4s;
+    }
+
+    .step-line.complete { background: var(--green); }
+
+    .step-label {
+      font-size: 10px;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .step.current .step-label { color: var(--accent); }
+    .step.complete .step-label { color: var(--green); }
+
+    /* --- Main Layout --- */
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-top: 8px;
+    }
+
+    .section-header h2 {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-2);
+    }
+
+    .badge {
+      font-size: 11px;
+      font-family: var(--mono);
+      padding: 1px 8px;
+      border-radius: 10px;
+      background: var(--bg-3);
+      color: var(--text-2);
+    }
+
+    .badge.pulse { animation: glow 2s infinite; color: var(--accent); }
+
+    /* --- Agent Cards --- */
+
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 10px;
+    }
+
+    .agent-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .agent-card[data-status="started"] {
+      border-color: var(--blue);
+      box-shadow: inset 0 1px 0 0 rgba(59, 130, 246, 0.1);
+    }
+
+    .agent-card[data-status="working"] {
+      border-color: color-mix(in srgb, var(--card-color, var(--accent)) 60%, transparent);
+      box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--card-color, var(--accent)) 10%, transparent);
+    }
+
+    .agent-card[data-status="complete"] {
+      border-color: var(--green);
+      box-shadow: inset 0 1px 0 0 rgba(34, 197, 94, 0.08);
+    }
+
+    .agent-card[data-status="error"] {
+      border-color: var(--red);
+      box-shadow: inset 0 1px 0 0 rgba(239, 68, 68, 0.1);
+    }
+
+    .agent-card[data-status="blocked"] {
+      border-color: var(--yellow);
+      box-shadow: inset 0 1px 0 0 rgba(234, 179, 8, 0.1);
+    }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .agent-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .agent-card[data-status="working"] .agent-dot,
+    .agent-card[data-status="started"] .agent-dot {
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    .agent-name {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-0);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .agent-badge {
+      font-size: 10px;
+      font-family: var(--mono);
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      flex-shrink: 0;
+    }
+
+    .agent-badge.started  { background: rgba(59, 130, 246, 0.12); color: var(--blue); }
+    .agent-badge.working  { background: rgba(217, 70, 239, 0.12); color: var(--accent); }
+    .agent-badge.complete { background: rgba(34, 197, 94, 0.12); color: var(--green); }
+    .agent-badge.error    { background: rgba(239, 68, 68, 0.12); color: var(--red); }
+    .agent-badge.blocked  { background: rgba(234, 179, 8, 0.12); color: var(--yellow); }
+
+    .agent-message {
+      font-size: 13px;
+      color: var(--text-1);
+      line-height: 1.45;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .agent-meta {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text-2);
+    }
+
+    /* --- Questions --- */
+
+    .questions-section { margin-top: 24px; animation: fadeIn 0.4s ease; }
+
+    .question-card {
+      background: var(--bg-2);
+      border: 1px solid color-mix(in srgb, var(--yellow) 40%, var(--border));
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 10px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .question-from {
+      font-size: 10px;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+
+    .question-text {
+      font-size: 14px;
+      color: var(--text-0);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .question-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .option-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-1);
+      color: var(--text-0);
+      font-size: 13px;
+      font-family: var(--sans);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .option-btn:hover {
+      background: var(--bg-3);
+      border-color: var(--accent);
+    }
+
+    .option-btn.selected {
+      background: rgba(217, 70, 239, 0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .question-input {
+      display: flex;
+      gap: 8px;
+    }
+
+    .question-input input {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-1);
+      color: var(--text-0);
+      font-size: 13px;
+      font-family: var(--sans);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .question-input input:focus { border-color: var(--accent); }
+
+    .submit-btn {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      line-height: 1;
+    }
+
+    .submit-btn:hover { opacity: 0.85; }
+
+    .question-card.answered {
+      opacity: 0.5;
+      border-color: var(--border);
+    }
+
+    .question-answer {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: rgba(34, 197, 94, 0.08);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--green);
+      font-family: var(--mono);
+    }
+
+    /* --- Activity Log --- */
+
+    .log-section { margin-top: 24px; }
+
+    .log-scroll {
+      max-height: 320px;
+      overflow-y: auto;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 4px;
+    }
+
+    .log-scroll::-webkit-scrollbar { width: 6px; }
+    .log-scroll::-webkit-scrollbar-track { background: transparent; }
+    .log-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .log-scroll::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
+
+    .log-entry {
+      display: flex;
+      gap: 10px;
+      padding: 3px 10px;
+      font-size: 12px;
+      font-family: var(--mono);
+      border-radius: 4px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .log-entry:hover { background: var(--bg-2); }
+
+    .log-time {
+      color: var(--text-2);
+      flex-shrink: 0;
+      min-width: 65px;
+    }
+
+    .log-agent {
+      flex-shrink: 0;
+      min-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .log-message { color: var(--text-1); }
+
+    .log-status {
+      flex-shrink: 0;
+      font-size: 11px;
+      padding: 0 5px;
+      border-radius: 3px;
+    }
+
+    /* --- Empty State --- */
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 48px 24px;
+      color: var(--text-2);
+      font-size: 13px;
+      grid-column: 1 / -1;
+    }
+
+    .empty-icon {
+      font-size: 28px;
+      color: var(--border-bright);
+      animation: glow 3s ease-in-out infinite;
+    }
+
+    /* --- Animations --- */
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @keyframes glow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* --- Responsive --- */
+
+    @media (max-width: 640px) {
+      header { padding: 12px 16px; }
+      main { padding: 0 16px 32px; }
+      .phase-bar { padding: 16px 8px; gap: 0; }
+      .step-line { width: 20px; }
+      .step-dot { width: 24px; height: 24px; font-size: 10px; }
+      .step-label { font-size: 9px; }
+      .agents-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <span class="logo">&#9670;</span>
+      <h1>POF <span>Dashboard</span></h1>
+    </div>
+    <div class="header-right">
+      <div class="status-indicator">
+        <span class="status-dot disconnected" id="connectionStatus"></span>
+        <span id="connectionText">Connecting</span>
+      </div>
+      <span class="duration" id="duration">00:00</span>
+    </div>
+  </header>
+
+  <nav class="phase-bar" id="phaseBar"></nav>
+
+  <main>
+    <section class="agents-section">
+      <div class="section-header">
+        <h2>Agents</h2>
+        <span class="badge" id="agentCount">0 active</span>
+      </div>
+      <div class="agents-grid" id="agentsGrid">
+        <div class="empty-state" id="agentsEmpty">
+          <span class="empty-icon">&#9671;</span>
+          <span>Waiting for agent activity...</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="questions-section" id="questionsSection" style="display:none">
+      <div class="section-header">
+        <h2>Questions</h2>
+        <span class="badge pulse" id="questionCount">0</span>
+      </div>
+      <div id="questionsList"></div>
+    </section>
+
+    <section class="log-section">
+      <div class="section-header">
+        <h2>Activity</h2>
+      </div>
+      <div class="log-scroll" id="logScroll">
+        <div id="logEntries"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // --- Configuration ---
+
+    const AGENT_COLORS = {
+      'orchestrator':           '#d946ef',
+      'stack-validator':        '#22c55e',
+      'architecture-advisor':   '#eab308',
+      'ux-designer':            '#a855f7',
+      'implementation-planner': '#f97316',
+      'git-committer':          '#22c55e',
+      'scaffolder':             '#06b6d4',
+      'test-runner':            '#22c55e',
+      'security-reviewer':      '#ef4444',
+      'deployer':               '#ef4444',
+      'adr-writer':             '#3b82f6',
+      'doc-researcher':         '#06b6d4',
+      'error-handler':          '#ef4444',
+    };
+
+    const PHASES = [
+      { key: '0', name: 'Init' },
+      { key: '1', name: 'Arch' },
+      { key: '2', name: 'Design' },
+      { key: '3', name: 'Scaffold' },
+      { key: '4', name: 'Implement' },
+      { key: '5', name: 'Deploy' },
+      { key: '6', name: 'Handoff' },
+    ];
+
+    // --- State ---
+
+    const state = {
+      agents: {},
+      questions: [],
+      log: [],
+      connected: false,
+      startedAt: null,
+      currentPhase: '0',
+    };
+
+    // --- DOM refs ---
+
+    const $ = (id) => document.getElementById(id);
+    const els = {};
+
+    // --- SSE Connection ---
+
+    let eventSource = null;
+
+    function connect() {
+      if (eventSource) eventSource.close();
+
+      eventSource = new EventSource('/api/events');
+
+      eventSource.addEventListener('init', (e) => {
+        const data = JSON.parse(e.data);
+        state.agents = data.agents || {};
+        state.questions = data.questions || [];
+        state.log = data.log || [];
+        state.startedAt = data.startedAt;
+        state.connected = true;
+        inferPhase();
+        renderAll();
+      });
+
+      eventSource.addEventListener('status', (e) => {
+        const update = JSON.parse(e.data);
+        state.agents[update.agent] = update;
+        state.log.push(update);
+        if (update.phase) state.currentPhase = update.phase.split('.')[0];
+        renderAgent(update.agent);
+        appendLogEntry(update);
+        renderPhases();
+        updateAgentCount();
+      });
+
+      eventSource.addEventListener('question', (e) => {
+        const q = JSON.parse(e.data);
+        state.questions.push(q);
+        renderQuestions();
+      });
+
+      eventSource.addEventListener('answer', (e) => {
+        const answered = JSON.parse(e.data);
+        const idx = state.questions.findIndex(q => q.id === answered.id);
+        if (idx >= 0) state.questions[idx] = answered;
+        renderQuestions();
+      });
+
+      eventSource.addEventListener('reset', (e) => {
+        const data = JSON.parse(e.data);
+        state.agents = {};
+        state.questions = [];
+        state.log = [];
+        state.startedAt = data.startedAt;
+        state.currentPhase = '0';
+        renderAll();
+      });
+
+      eventSource.addEventListener('shutdown', () => {
+        state.connected = false;
+        renderConnectionStatus();
+      });
+
+      eventSource.onopen = () => {
+        state.connected = true;
+        renderConnectionStatus();
+      };
+
+      eventSource.onerror = () => {
+        state.connected = false;
+        renderConnectionStatus();
+        eventSource.close();
+        setTimeout(connect, 3000);
+      };
+    }
+
+    // --- Inference ---
+
+    function inferPhase() {
+      let maxPhase = 0;
+      for (const a of Object.values(state.agents)) {
+        if (a.phase) {
+          const p = parseInt(a.phase.split('.')[0]);
+          if (p > maxPhase) maxPhase = p;
+        }
+      }
+      state.currentPhase = String(maxPhase);
+    }
+
+    // --- Render Functions ---
+
+    function renderAll() {
+      renderConnectionStatus();
+      renderPhases();
+      renderAgents();
+      renderLog();
+      renderQuestions();
+      updateAgentCount();
+    }
+
+    function renderConnectionStatus() {
+      const dot = els.connectionStatus;
+      const text = els.connectionText;
+      if (state.connected) {
+        dot.className = 'status-dot connected';
+        text.textContent = 'Connected';
+      } else {
+        dot.className = 'status-dot disconnected';
+        text.textContent = 'Reconnecting...';
+      }
+    }
+
+    function renderPhases() {
+      const cur = parseInt(state.currentPhase) || 0;
+      els.phaseBar.innerHTML = PHASES.map((phase, i) => {
+        const cls = i < cur ? 'step complete' : i === cur ? 'step current' : 'step';
+        const dot = i < cur ? '\u2713' : String(i);
+        const line = i < PHASES.length - 1
+          ? `<div class="step-line${i < cur ? ' complete' : ''}"></div>`
+          : '';
+        return `<div class="${cls}"><div class="step-dot">${dot}</div><div class="step-label">${phase.name}</div></div>${line}`;
+      }).join('');
+    }
+
+    function renderAgents() {
+      const names = Object.keys(state.agents);
+      if (names.length === 0) {
+        els.agentsGrid.innerHTML = '<div class="empty-state" id="agentsEmpty"><span class="empty-icon">&#9671;</span><span>Waiting for agent activity...</span></div>';
+        return;
+      }
+      els.agentsGrid.innerHTML = '';
+      for (const name of names) renderAgent(name);
+    }
+
+    function renderAgent(name) {
+      const data = state.agents[name];
+      if (!data) return;
+
+      const color = AGENT_COLORS[name] || '#71717a';
+      const status = data.status || 'working';
+
+      let card = els.agentsGrid.querySelector(`[data-agent="${name}"]`);
+      if (!card) {
+        card = document.createElement('div');
+        card.className = 'agent-card';
+        card.dataset.agent = name;
+        els.agentsGrid.appendChild(card);
+        const empty = $('agentsEmpty');
+        if (empty) empty.remove();
+      }
+
+      card.dataset.status = status;
+      card.style.setProperty('--card-color', color);
+      card.innerHTML = `
+        <div class="agent-header">
+          <span class="agent-dot" style="background:${color}"></span>
+          <span class="agent-name">${esc(name)}</span>
+          <span class="agent-badge ${status}">${status}</span>
+        </div>
+        <div class="agent-message">${esc(data.message)}</div>
+        <div class="agent-meta" data-ts="${data.timestamp || data.lastSeen || ''}" data-phase="${data.phase || ''}">${metaText(data)}</div>
+      `;
+    }
+
+    function metaText(data) {
+      const parts = [];
+      if (data.phase) parts.push('Phase ' + data.phase);
+      const ts = data.timestamp || data.lastSeen;
+      if (ts) parts.push(timeAgo(ts));
+      return parts.join(' \u00b7 ');
+    }
+
+    function appendLogEntry(update) {
+      const color = AGENT_COLORS[update.agent] || '#71717a';
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      const t = new Date(update.timestamp);
+      const time = t.toLocaleTimeString('en-US', { hour12: false });
+      entry.innerHTML = `
+        <span class="log-time">${time}</span>
+        <span class="log-agent" style="color:${color}">${esc(update.agent)}</span>
+        <span class="log-message">${esc(update.message)}</span>
+      `;
+      els.logEntries.appendChild(entry);
+      els.logScroll.scrollTop = els.logScroll.scrollHeight;
+
+      while (els.logEntries.children.length > 300) {
+        els.logEntries.removeChild(els.logEntries.firstChild);
+      }
+    }
+
+    function renderLog() {
+      els.logEntries.innerHTML = '';
+      for (const entry of state.log) appendLogEntry(entry);
+    }
+
+    function renderQuestions() {
+      const pending = state.questions.filter(q => !q.answered);
+      const answered = state.questions.filter(q => q.answered);
+
+      if (state.questions.length === 0) {
+        els.questionsSection.style.display = 'none';
+        return;
+      }
+
+      els.questionsSection.style.display = '';
+      els.questionCount.textContent = pending.length || '';
+
+      let html = '';
+
+      for (const q of pending) {
+        const color = AGENT_COLORS[q.agent] || '#71717a';
+        html += `<div class="question-card" data-qid="${q.id}">
+          <div class="question-from" style="color:${color}">${esc(q.agent)}</div>
+          <div class="question-text">${esc(q.question)}</div>
+          ${q.options ? `<div class="question-options">${q.options.map(o =>
+            `<button class="option-btn" onclick="selectOpt('${q.id}',this)">${esc(o)}</button>`
+          ).join('')}</div>` : ''}
+          <div class="question-input">
+            <input type="text" id="ans-${q.id}" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')submitAns('${q.id}')">
+            <button class="submit-btn" onclick="submitAns('${q.id}')">\u2192</button>
+          </div>
+        </div>`;
+      }
+
+      for (const q of answered.slice(-5)) {
+        const color = AGENT_COLORS[q.agent] || '#71717a';
+        html += `<div class="question-card answered" data-qid="${q.id}">
+          <div class="question-from" style="color:${color}">${esc(q.agent)}</div>
+          <div class="question-text">${esc(q.question)}</div>
+          <div class="question-answer">\u2713 ${esc(q.answer)}</div>
+        </div>`;
+      }
+
+      els.questionsList.innerHTML = html;
+    }
+
+    function updateAgentCount() {
+      const total = Object.keys(state.agents).length;
+      const active = Object.values(state.agents).filter(
+        a => a.status === 'working' || a.status === 'started'
+      ).length;
+      els.agentCount.textContent = active > 0 ? `${active} active` : `${total} total`;
+    }
+
+    // --- Actions ---
+
+    window.selectOpt = function(qid, btn) {
+      const input = $('ans-' + qid);
+      if (input) input.value = btn.textContent;
+      const card = document.querySelector(`[data-qid="${qid}"]`);
+      if (card) card.querySelectorAll('.option-btn').forEach(b =>
+        b.classList.toggle('selected', b === btn)
+      );
+    };
+
+    window.submitAns = async function(qid) {
+      const input = $('ans-' + qid);
+      if (!input || !input.value.trim()) return;
+      const answer = input.value.trim();
+      input.disabled = true;
+      try {
+        await fetch('/api/answer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: qid, answer }),
+        });
+      } catch (e) {
+        console.error('Failed to submit answer:', e);
+        input.disabled = false;
+      }
+    };
+
+    // --- Utilities ---
+
+    function esc(str) {
+      if (!str) return '';
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    function timeAgo(ts) {
+      if (!ts) return '';
+      const s = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
+      if (s < 5) return 'just now';
+      if (s < 60) return s + 's ago';
+      const m = Math.floor(s / 60);
+      if (m < 60) return m + 'm ago';
+      const h = Math.floor(m / 60);
+      return h + 'h ago';
+    }
+
+    function updateDuration() {
+      if (!state.startedAt) { els.duration.textContent = '00:00'; return; }
+      const s = Math.floor((Date.now() - new Date(state.startedAt).getTime()) / 1000);
+      const mm = Math.floor(s / 60).toString().padStart(2, '0');
+      const ss = (s % 60).toString().padStart(2, '0');
+      const h = Math.floor(s / 3600);
+      els.duration.textContent = h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+    }
+
+    // --- Initialize ---
+
+    document.addEventListener('DOMContentLoaded', () => {
+      els.connectionStatus = $('connectionStatus');
+      els.connectionText = $('connectionText');
+      els.duration = $('duration');
+      els.phaseBar = $('phaseBar');
+      els.agentsGrid = $('agentsGrid');
+      els.agentCount = $('agentCount');
+      els.logEntries = $('logEntries');
+      els.logScroll = $('logScroll');
+      els.questionsSection = $('questionsSection');
+      els.questionsList = $('questionsList');
+      els.questionCount = $('questionCount');
+
+      renderPhases();
+      connect();
+      setInterval(updateDuration, 1000);
+
+      // Refresh time-ago values
+      setInterval(() => {
+        document.querySelectorAll('.agent-meta[data-ts]').forEach(el => {
+          const ts = el.dataset.ts;
+          const phase = el.dataset.phase;
+          if (!ts) return;
+          const parts = [];
+          if (phase) parts.push('Phase ' + phase);
+          parts.push(timeAgo(ts));
+          el.textContent = parts.join(' \u00b7 ');
+        });
+      }, 5000);
+    });
+  </script>
+</body>
+</html>

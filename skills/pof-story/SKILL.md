@@ -37,10 +37,8 @@ If the story is incomplete or unclear, ask for clarification.
 ### Step 2: Load Project Context
 
 Read existing context:
-```bash
-cat .claude/context/architecture.md 2>/dev/null
-cat .claude/context/state.json 2>/dev/null
-```
+- `.claude/context/architecture.md`
+- `.claude/context/state.json`
 
 If no context exists:
 ```markdown
@@ -73,50 +71,23 @@ As a {who}, I want {what} so that {why}.
 ### Step 4: Dispatch to UX Designer
 
 Use the Task tool to invoke `pof-ux-designer`:
-
-```
-Task tool:
-- subagent_type: pof-ux-designer
-- prompt: |
-    Review this user story and provide UX/accessibility guidance:
-
-    {story content}
-
-    Consider:
-    - Interaction patterns needed
-    - Accessibility requirements
-    - Component structure
-    - Loading/error states
-
-    Read .claude/context/architecture.md for tech stack context.
-```
+- Provide story content and architecture context
+- Ask for interaction patterns, accessibility requirements, component structure, loading/error states
 
 Present UX recommendations to user (requires approval).
 
 ### Step 5: Dispatch to Implementation Planner
 
 After UX approval, use the Task tool to invoke `pof-implementation-planner`:
-
-```
-Task tool:
-- subagent_type: pof-implementation-planner
-- prompt: |
-    Create an implementation plan for this user story:
-
-    {story content}
-
-    UX requirements:
-    {ux recommendations}
-
-    Read existing context from .claude/context/
-    Write plan to .claude/context/implementation-plan.md
-```
+- Provide story content, UX recommendations, architecture context
+- Ask it to create a detailed plan with commit points
+- It writes to `.claude/context/implementation-plan.md`
 
 Present implementation plan to user (requires approval).
 
-### Step 6: Hand Off to Orchestrator
+### Step 6: Begin Inline Implementation
 
-After plan approval, update state and launch orchestrator:
+After plan approval, update state and begin implementation directly:
 
 Update `.claude/context/state.json`:
 ```json
@@ -124,40 +95,35 @@ Update `.claude/context/state.json`:
   "currentPhase": "4.2",
   "status": "implementing",
   "mode": "story",
-  "currentStory": "current-story.md"
+  "currentStory": "current-story.md",
+  "lastCheckpoint": "4.1"
 }
 ```
 
-Launch orchestrator:
-```
-Task tool:
-- subagent_type: pof-orchestrator
-- prompt: |
-    Continue POF workflow in story mode.
-    Implement the approved plan in .claude/context/implementation-plan.md
-    Story context in .claude/context/current-story.md
+**Continue with implementation inline** — follow the `/pof:orchestrate` Phase 4.2 instructions:
 
-    After implementation:
-    - Run security review
-    - Create commits
-    - Write ADR if architectural decisions were made
-    - Mark story complete
-```
+1. Read `implementation-plan.md`
+2. For each task in the plan:
+   - Implement the feature (write code in this conversation)
+   - Dispatch `pof-test-runner` if tests apply
+   - Dispatch `pof-git-committer` for a feature-level conventional commit
+   - Report progress to dashboard
+3. After all tasks: dispatch `pof-security-reviewer`
+4. Present completion summary
 
-## Story Completion
+**Do not** spawn a `pof-orchestrator` subagent. Run everything inline in this conversation.
 
-When implementation finishes, update `current-story.md`:
+### Step 7: Story Completion
 
-```markdown
-## Status
-- Created: {timestamp}
-- Completed: {timestamp}
-- Phase: done
-- Commits: {list of commit hashes}
-- ADRs: {list if any}
-```
+When implementation finishes:
 
-Archive to `.claude/context/stories/{date}-{slug}.md` for history.
+1. Verify all acceptance criteria in `current-story.md` are met
+2. Dispatch `pof-adr-writer` if architectural decisions were made
+3. Update `current-story.md` status to `done` with commit list
+4. Archive to `.claude/context/stories/{date}-{slug}.md`
+5. Reset state: `{ "currentPhase": "idle", "status": "ready", "mode": null, "lastStory": "{slug}" }`
+
+Present story completion summary.
 
 ## Quick Mode
 
@@ -167,7 +133,18 @@ For small stories that don't need UX review:
 /pof:story --quick Fix the login button alignment on mobile
 ```
 
-This skips UX designer and goes straight to implementation planning.
+This skips UX designer (Step 4) and goes straight to implementation planning.
+
+## Dashboard Reporting
+
+Report story progress throughout:
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"orchestrator","phase":"4.2","status":"working","message":"Implementing: <task>"}' \
+  > /dev/null 2>&1 || true
+```
 
 ## Output Format
 

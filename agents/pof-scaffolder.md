@@ -180,3 +180,22 @@ API_KEY=
 ```
 
 Never create `.env.local` with actual values. Guide user to set them.
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"scaffolder","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Initializing project structure"`
+- During work: `"status":"working","message":"<current step>"`
+- On completion: `"status":"complete","message":"Scaffold created"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.

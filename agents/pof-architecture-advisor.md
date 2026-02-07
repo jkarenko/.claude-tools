@@ -95,3 +95,21 @@ If the user has specified a preference:
 4. Ask if they have documentation that addresses your concerns
 
 Never dismiss user choices without explanation. They may have valid reasons you're unaware of.
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"architecture-advisor","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Analyzing architecture choices"`
+- On completion: `"status":"complete","message":"<recommendation summary>"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.

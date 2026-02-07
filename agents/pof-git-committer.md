@@ -105,3 +105,21 @@ git commit -m "feat(auth): implement login flow
 - Commit sensitive files (.env, credentials)
 - Generic messages like "update files" or "fix stuff"
 - Include AI attribution in commit messages
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"git-committer","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Preparing commit"`
+- On completion: `"status":"complete","message":"Committed: <short commit message>"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.

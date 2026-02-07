@@ -105,3 +105,21 @@ shadcn/ui components are generally accessible, but check:
 - Progress indicators for long operations
 
 Be specific and actionable. Reference WCAG criteria when relevant.
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"ux-designer","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Reviewing UX and accessibility requirements"`
+- On completion: `"status":"complete","message":"<recommendations summary>"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.

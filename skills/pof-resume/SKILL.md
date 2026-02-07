@@ -17,9 +17,7 @@ Resume a POF workflow from saved state.
 
 ### 1. Check for Existing State
 
-```bash
-cat .claude/context/state.json 2>/dev/null
-```
+Read `.claude/context/state.json`.
 
 If no state file exists:
 ```markdown
@@ -34,8 +32,18 @@ Read all context files:
 - `.claude/context/requirements.md` - Original requirements
 - `.claude/context/architecture.md` - Approved architecture (if exists)
 - `.claude/context/implementation-plan.md` - Implementation plan (if exists)
+- `.claude/context/current-story.md` - Active story (if in story mode)
 
-### 3. Present Resume Summary
+### 3. Start Dashboard (optional)
+
+```bash
+curl -s http://localhost:3456/health > /dev/null 2>&1 || \
+  bun run ~/.claude-tools/dashboard/server.ts > /dev/null 2>&1 &
+```
+
+If dashboard is already running, skip. If it starts, inform the user.
+
+### 4. Present Resume Summary
 
 ```markdown
 ## Resuming POF Workflow
@@ -46,10 +54,10 @@ Read all context files:
 **Status**: {status}
 
 ### Context Loaded
-- ✓ Requirements
-- ✓ Decisions ({N} recorded)
-- {✓/✗} Architecture
-- {✓/✗} Implementation plan
+- {check} Requirements
+- {check} Decisions ({N} recorded)
+- {check/cross} Architecture
+- {check/cross} Implementation plan
 
 ### Recent Decisions
 | ID | Decision | Phase |
@@ -65,13 +73,13 @@ The workflow will resume from **{current step}**.
 Proceed? (yes/no/review)
 ```
 
-### 4. Handle Response
+### 5. Handle Response
 
-**"yes"**: Launch orchestrator with `/pof:orchestrate`
+**"yes"**: Continue directly with the `/pof:orchestrate` instructions — read state, determine phase, and proceed inline. **Do not** spawn a subagent.
 
-**"no"**: Ask what they want to do instead
+**"no"**: Ask what they want to do instead.
 
-**"review"**: Show more detailed state, allow modifications
+**"review"**: Show more detailed state, allow modifications.
 
 ## State Recovery
 

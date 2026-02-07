@@ -144,3 +144,22 @@ After every deployment, document:
 4. Who to contact if issues
 
 Write rollback info to `.claude/context/rollback.md` and trigger ADR for major deployments.
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"deployer","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Starting deployment to <target>"`
+- During work: `"status":"working","message":"<current step>"`
+- On completion: `"status":"complete","message":"Deployed to <URL or target>"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.

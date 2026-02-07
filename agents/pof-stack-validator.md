@@ -91,3 +91,21 @@ npm view {package} version
 - Check Azure SWA Next.js adapter
 
 Keep output concise. Your results are auto-accepted, so focus on facts that inform decisions.
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"stack-validator","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Validating stack compatibility"`
+- On completion: `"status":"complete","message":"<verdict summary>"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.

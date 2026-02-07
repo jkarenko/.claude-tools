@@ -105,3 +105,21 @@ Read these for context:
 - `docs/adr/` - Architecture Decision Records
 
 Write plan to `.claude/context/implementation-plan.md` for reference.
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"implementation-planner","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Creating implementation plan"`
+- On completion: `"status":"complete","message":"Plan created with N tasks"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.

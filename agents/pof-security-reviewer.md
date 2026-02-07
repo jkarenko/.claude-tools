@@ -119,3 +119,21 @@ grep -r "process.env" --include="*.tsx" --include="*.ts"
 5. **Missing rate limiting**: Protect auth and API endpoints
 
 Be thorough but prioritize findings by actual risk. Findings require user acknowledgment before proceeding.
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"security-reviewer","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Reviewing security"`
+- On completion: `"status":"complete","message":"N critical, N high, N medium, N low findings"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.

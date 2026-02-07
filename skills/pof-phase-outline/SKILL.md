@@ -14,36 +14,30 @@ Display the complete POF phase structure for reference.
 
 ### PHASE 0: INITIALIZATION
 ├── 0.1 Project state detection (green-field/existing/integration)
-├── 0.2 Requirements gathering
-├── 0.3 Source priority setup
+├── 0.2 Git init + requirements gathering
+├── 0.3 Context setup + initial commit
 └── 0.4 Phase outline presentation → **CHECKPOINT**
 
 ### PHASE 1: ARCHITECTURE
 ├── 1.1 Stack validation
 ├── 1.2 Infrastructure discussion
 ├── 1.3 Architecture proposal
-├── 1.4 Alternatives presentation (if concerns)
-└── 1.5 Architecture approval → **CHECKPOINT** + ADR
+└── 1.5 Architecture approval → **CHECKPOINT** + ADR + COMMIT
 
 ### PHASE 2: DESIGN
 ├── 2.1 UX/accessibility patterns
-├── 2.2 Component structure
-├── 2.3 Data flow design
-└── 2.4 Design approval → **CHECKPOINT** + ADR
+├── 2.2 Component & data flow design
+└── 2.4 Design approval → **CHECKPOINT** + ADR + COMMIT
 
-### PHASE 3: SCAFFOLDING (if needed)
+### PHASE 3: SCAFFOLDING (if green-field)
 ├── 3.1 Project initialization
-├── 3.2 Dependency installation
-├── 3.3 Configuration setup
-└── 3.4 Scaffold verification → ADR + COMMIT
+├── 3.2 Dependencies & configuration
+└── 3.4 Scaffold verification → COMMIT
 
 ### PHASE 4: IMPLEMENTATION
-├── 4.1 Implementation planning
-├── 4.2 Iterative development cycles
-│   ├── Code generation
-│   ├── Test running (parallel)
-│   ├── Git commits (parallel)
-│   └── Progress reporting
+├── 4.1 Implementation planning → **CHECKPOINT**
+├── 4.2 Development cycles
+│   └── Per feature: code → test → COMMIT
 ├── 4.3 Security review
 └── 4.4 Implementation approval → **CHECKPOINT**
 
@@ -52,19 +46,19 @@ Display the complete POF phase structure for reference.
 ├── 5.2 Deployment plan review → **CHECKPOINT**
 ├── 5.3 Deployment execution
 ├── 5.4 Verification
-└── 5.5 Rollback documentation → ADR
+└── 5.5 Rollback documentation → ADR + COMMIT
 
 ### PHASE 6: HANDOFF
 ├── 6.1 Documentation finalization
 ├── 6.2 ADR index generation
-└── 6.3 Summary presentation
+└── 6.3 Summary presentation → final COMMIT
 
 ---
 
 **Legend:**
 - **CHECKPOINT**: Requires user approval to proceed
 - **ADR**: Architecture Decision Record written
-- **COMMIT**: Git commit created
+- **COMMIT**: Conventional commit created (feature-level granularity)
 ```
 
 ## With Current Position

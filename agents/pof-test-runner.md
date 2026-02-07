@@ -100,3 +100,21 @@ If tests fail to run:
 3. Report the setup issue clearly
 
 Your results are auto-accepted, so focus on clear, actionable reporting.
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"test-runner","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Running tests"`
+- On completion: `"status":"complete","message":"N passed, N failed"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.

@@ -9,8 +9,8 @@ description: Quick reference for POF commands and when to use them.
 
 | Situation | Command | Description |
 |-----------|---------|-------------|
-| **Starting fresh** | `/pof:kickoff` | New project or major new system |
-| **Adding a feature** | `/pof:story <story>` | User story → design → implement |
+| **Starting fresh** | `/pof:kickoff` | New project → setup → architecture → build |
+| **Adding a feature** | `/pof:story <story>` | User story → design → implement → commit |
 | **Resuming work** | `/pof:resume` | Continue interrupted workflow |
 | **Check status** | `/pof:progress` | See current phase and next steps |
 | **See all phases** | `/pof:phase-outline` | Full phase structure |
@@ -24,22 +24,27 @@ description: Quick reference for POF commands and when to use them.
 ### New Project
 ```
 /pof:kickoff
-→ Answer requirements questions
+→ Git init + answer requirements questions
 → Approve phase outline
-/pof:orchestrate
+→ Architecture phase runs (agents dispatched inline)
 → Approve architecture
+→ Design phase runs
 → Approve design
-→ Implementation runs
-→ Approve deployment
+→ Scaffolding + commit
+→ Implementation (code → test → commit per feature)
+→ Security review
+→ Deployment (if applicable)
 → Done
 ```
+
+The entire flow is seamless after kickoff — no need to run separate commands between phases.
 
 ### Adding Features (After Initial Setup)
 ```
 /pof:story As a user, I want to export data as CSV
 → Review UX recommendations
 → Approve implementation plan
-→ Implementation runs
+→ Implementation runs (commit per feature)
 → Done
 ```
 
@@ -47,6 +52,7 @@ description: Quick reference for POF commands and when to use them.
 ```
 /pof:story --quick Fix timezone display in dashboard
 → Approve plan
+→ Implementation + commit
 → Done
 ```
 
@@ -55,7 +61,7 @@ description: Quick reference for POF commands and when to use them.
 /pof:resume
 → See where you left off
 → Approve to continue
-→ Workflow resumes
+→ Workflow resumes inline
 ```
 
 ## When NOT to Use POF
@@ -69,19 +75,25 @@ POF is for structured development with documentation, not every interaction.
 
 ## Key Concepts
 
-**Checkpoints**: Points where POF pauses for your approval
+**Inline Orchestration**: All phases run directly in the conversation. Specialist agents are dispatched for focused tasks (validation, planning, commits) but the workflow logic stays in the main conversation where you can interact.
+
+**Dashboard** (optional): Real-time monitoring at `http://localhost:3456`. Started automatically by kickoff. Shows agent activity, phase progress, and pending questions. Works without it — purely additive.
+
+**Checkpoints**: Points where POF pauses for your approval:
 - Architecture decisions
 - Design decisions
 - Implementation plans
 - Deployment actions
 
-**ADRs**: Architecture Decision Records in `docs/adr/`
-- Created automatically for significant decisions
-- Permanent documentation of why choices were made
+**Feature-Level Commits**: Every implemented feature gets its own conventional commit (`type(scope): description`), not just one commit at the end.
 
-**State**: Workflow state in `.claude/context/`
+**ADRs**: Architecture Decision Records in `docs/adr/`. Created automatically for significant decisions. Permanent documentation of why choices were made.
+
+**State**: Workflow state in `.claude/context/`:
 - `state.json` - Current phase
 - `decisions.json` - Decisions made
+- `architecture.md` - Approved architecture
+- `implementation-plan.md` - Current plan
 - `current-story.md` - Active story (if using /pof:story)
 
 ## Tips
@@ -91,3 +103,4 @@ POF is for structured development with documentation, not every interaction.
 3. **Use --quick for small stuff** - Skip UX review when not needed
 4. **Check /pof:progress if lost** - See where you are
 5. **Stories are archived** - Build project history over time
+6. **Dashboard is optional** - Open it for visibility, close it when not needed

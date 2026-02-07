@@ -12,6 +12,9 @@ Personal Claude Code skills and agents, synced across machines.
 ├── skills/            # Custom skills (slash commands)
 │   └── <name>/
 │       └── SKILL.md
+├── dashboard/         # POF real-time monitoring dashboard
+│   ├── server.ts      # Bun HTTP server + SSE
+│   └── index.html     # Single-page UI (zero deps)
 └── templates/         # POF context templates
     ├── context/       # Workflow state templates
     └── adr/           # ADR templates
@@ -38,72 +41,209 @@ To update later: `cd ~/.claude-tools && git pull`
 
 ## POF: Project Orchestration Flow
 
-A comprehensive workflow system for orchestrated project development. POF manages complex multi-step objectives with parallel execution, checkpoints, and continuous documentation.
+A workflow system for orchestrated project development. POF manages multi-phase projects with specialist agents, user checkpoints, real-time monitoring, and continuous documentation.
+
+### Workflow
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  /pof:kickoff                                                        │
+│                                                                      │
+│  Detect project state ─► Git init ─► Gather requirements             │
+│  ─► Create .claude/context/ ─► Start dashboard ─► Initial commit     │
+│  ─► Present phase outline ─► CHECKPOINT 0.4                          │
+└──────────────────┬───────────────────────────────────────────────────┘
+                   │ user approves
+                   ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 1: ARCHITECTURE (inline orchestration)                        │
+│                                                                      │
+│  ┌─────────────────┐   ┌────────────────────────┐                   │
+│  │ stack-validator  │──►│ architecture-advisor    │                   │
+│  │ (validate stack) │   │ (analyze, recommend)    │                   │
+│  └─────────────────┘   └───────────┬────────────┘                   │
+│                                     ▼                                │
+│                         Write architecture.md                        │
+│                         ─► CHECKPOINT 1.5 ─► ADR + COMMIT            │
+└──────────────────┬───────────────────────────────────────────────────┘
+                   │ user approves
+                   ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 2: DESIGN                                                     │
+│                                                                      │
+│  ┌─────────────────┐                                                │
+│  │ ux-designer      │──► UX patterns, accessibility, components      │
+│  └─────────────────┘    ─► CHECKPOINT 2.4 ─► ADR + COMMIT           │
+└──────────────────┬───────────────────────────────────────────────────┘
+                   │ user approves
+                   ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 3: SCAFFOLDING (green-field only)                             │
+│                                                                      │
+│  ┌─────────────────┐                                                │
+│  │ scaffolder       │──► Initialize project ─► Install deps          │
+│  └─────────────────┘    ─► Verify ─► COMMIT                         │
+└──────────────────┬───────────────────────────────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 4: IMPLEMENTATION                                             │
+│                                                                      │
+│  ┌──────────────────────┐                                           │
+│  │ implementation-       │──► Create task plan                       │
+│  │ planner              │    ─► CHECKPOINT 4.1                       │
+│  └──────────────────────┘                                           │
+│                                                                      │
+│  For each task in plan:                                              │
+│  ┌──────────┐   ┌─────────────┐   ┌───────────────┐                │
+│  │ Write    │──►│ test-runner  │──►│ git-committer  │               │
+│  │ code     │   │ (validate)   │   │ (feature commit)│               │
+│  └──────────┘   └─────────────┘   └───────────────┘                │
+│                                                                      │
+│  ┌───────────────────┐                                              │
+│  │ security-reviewer  │──► Review all changes                        │
+│  └───────────────────┘    ─► CHECKPOINT 4.4                          │
+└──────────────────┬───────────────────────────────────────────────────┘
+                   │ user approves
+                   ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 5: DEPLOYMENT                                                 │
+│                                                                      │
+│  CHECKPOINT 5.2 ─► deployer ─► Verify ─► ADR + COMMIT               │
+└──────────────────┬───────────────────────────────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 6: HANDOFF                                                    │
+│                                                                      │
+│  Finalize docs ─► ADR index ─► Summary ─► Final COMMIT              │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### Key Design Principles
+
+- **Inline orchestration**: All phases run in the main conversation where the user can interact. Specialist agents are dispatched for focused work and return results.
+- **Feature-level commits**: Every feature gets its own conventional commit (`type(scope): description`), not one big commit at the end.
+- **Git from the start**: `git init` happens at kickoff. Context files are committed immediately.
+- **Dashboard is optional**: Real-time monitoring at `localhost:3456`. Agents report progress via `curl` that silently no-ops if the dashboard isn't running.
+- **Checkpoints**: User must approve architecture, design, implementation plans, and deployment before proceeding.
 
 ### Quick Start
 
 ```bash
-# In your project directory
+# New project — full workflow
 /pof:kickoff
+
+# Add a feature to existing project
+/pof:story As a user, I want to filter products by category
+
+# Quick bug fix
+/pof:story --quick Fix timezone display in dashboard
+
+# Resume interrupted workflow
+/pof:resume
 ```
 
-### POF Skills (14)
+### Story Flow (feature development)
+
+```
+/pof:story As a user, I want...
+    │
+    ▼
+Parse story ─► Load project context
+    │
+    ▼
+┌─────────────┐    ┌──────────────────────┐
+│ ux-designer  │──►│ implementation-planner │
+│ (patterns)   │   │ (task breakdown)       │
+└─────────────┘    └──────────┬───────────┘
+                              │ user approves plan
+                              ▼
+              For each task: code ─► test ─► commit
+                              │
+                              ▼
+              Security review ─► Archive story ─► Done
+```
+
+### POF Skills (16)
 
 | Skill | Purpose |
 |-------|---------|
-| `/pof:kickoff` | Start a new workflow |
-| `/pof:orchestrate` | Launch the orchestrator agent |
+| `/pof:kickoff` | Start a new workflow (git init, setup, auto-continues) |
+| `/pof:orchestrate` | Drive workflow phases inline |
+| `/pof:story` | Add a feature via user story |
+| `/pof:resume` | Resume paused workflow |
 | `/pof:progress` | Show current phase and status |
+| `/pof:phase-outline` | Show all phases and sub-steps |
 | `/pof:checkpoint` | Present approval checkpoint |
 | `/pof:clarify` | Ask structured clarifying questions |
 | `/pof:alternatives` | Present multiple options |
-| `/pof:sources` | Manage documentation sources |
 | `/pof:override` | Override a recommendation |
+| `/pof:sources` | Manage documentation sources |
 | `/pof:verbose` | Toggle detailed explanations |
 | `/pof:env-config` | Manage environment variables |
-| `/pof:phase-outline` | Show all phases |
-| `/pof:resume` | Resume paused workflow |
 | `/pof:abort` | Gracefully stop workflow |
 | `/pof:rollback` | Show rollback options |
+| `/pof:guide` | Quick reference for all commands |
 
 ### POF Agents (13)
 
 | Agent | Purpose | Auto-accept |
 |-------|---------|-------------|
-| `pof-orchestrator` | Workflow coordination | N/A |
-| `pof-doc-researcher` | Documentation lookup | Yes |
-| `pof-architecture-advisor` | Tech analysis | No |
-| `pof-stack-validator` | Compatibility checks | Yes |
-| `pof-ux-designer` | Accessibility/UX | No |
-| `pof-implementation-planner` | Task breakdown | No |
-| `pof-adr-writer` | ADR documentation | Yes |
+| `pof-orchestrator` | Workflow coordination (reference/fallback) | N/A |
+| `pof-stack-validator` | Technology compatibility checks | Yes |
+| `pof-architecture-advisor` | Tech analysis and recommendations | No |
+| `pof-ux-designer` | Accessibility and UX patterns | No |
+| `pof-implementation-planner` | Task breakdown and sequencing | No |
+| `pof-scaffolder` | Project structure initialization | No |
 | `pof-git-committer` | Conventional commits | Yes (commit) |
-| `pof-test-runner` | Test execution | Yes |
-| `pof-security-reviewer` | Security analysis | No |
-| `pof-deployer` | Deployment | No |
-| `pof-error-handler` | Failure recovery | No |
-| `pof-scaffolder` | Project setup | No |
+| `pof-test-runner` | Test execution and reporting | Yes |
+| `pof-security-reviewer` | Security vulnerability analysis | No |
+| `pof-deployer` | Deployment to infrastructure | No |
+| `pof-adr-writer` | Architecture Decision Records | Yes |
+| `pof-doc-researcher` | Documentation lookup | Yes |
+| `pof-error-handler` | Failure diagnosis and recovery | No |
 
-### POF Phases
+All agents report progress to the dashboard via `curl` (silently no-ops if dashboard not running).
 
+### Dashboard
+
+Real-time monitoring UI for the POF workflow.
+
+```bash
+# Start manually (kickoff starts it automatically)
+bun run ~/.claude-tools/dashboard/server.ts
+
+# View at
+open http://localhost:3456
 ```
-PHASE 0: INITIALIZATION → CHECKPOINT
-PHASE 1: ARCHITECTURE → CHECKPOINT + ADR
-PHASE 2: DESIGN → CHECKPOINT + ADR
-PHASE 3: SCAFFOLDING → COMMIT
-PHASE 4: IMPLEMENTATION → CHECKPOINT
-PHASE 5: DEPLOYMENT → CHECKPOINT + ADR
-PHASE 6: HANDOFF
-```
+
+Features:
+- Phase progress stepper
+- Agent cards with live status and colors
+- Activity log with timestamps
+- Question/answer panel for async two-way communication
+- Auto-reconnecting SSE stream
+
+API endpoints:
+- `POST /api/status` — agent progress reports
+- `POST /api/question` — post a question for the user
+- `POST /api/answer` — user answers from the UI
+- `GET /api/events` — SSE stream for real-time updates
+- `GET /api/state` — full state snapshot
+- `GET /health` — uptime check
 
 ### Context Files
 
 POF maintains state in `.claude/context/`:
-- `state.json` - Current phase and status
-- `decisions.json` - Recorded decisions
-- `requirements.md` - Project requirements
-- `architecture.md` - Approved architecture
-- `sources.json` - Documentation sources
+
+| File | Purpose |
+|------|---------|
+| `state.json` | Current phase, status, mode |
+| `decisions.json` | Recorded architectural decisions |
+| `requirements.md` | Project requirements |
+| `architecture.md` | Approved architecture |
+| `implementation-plan.md` | Current implementation plan |
+| `current-story.md` | Active user story |
+| `stories/` | Archived completed stories |
 
 ### ADR Convention
 
@@ -111,16 +251,19 @@ POF uses Nygard-style ADRs in `docs/adr/`:
 - One decision per ADR
 - Format: `NNNN-short-kebab-title.md`
 - Sections: Context, Decision, Consequences
+- Bidirectional superseded linking
 
 ---
 
-## Other Agents
-
-- `codebase-takeover-analyst` - Analyze codebases for team handovers
-- `git-commit-writer` - Generate conventional commit messages
-- `sensitive-data-scanner` - Scan for leaked secrets/PII
-- `website-reverse-engineer` - Create specs from existing websites
-
 ## Other Skills
 
-- `reverse-engineer` - Reverse engineer binary formats or code
+| Skill | Purpose |
+|-------|---------|
+| `/commit` | Create a conventional commit from staged changes |
+| `/reverse-engineer` | Reverse engineer binary formats or code |
+
+## Other Agents
+
+- `codebase-takeover-analyst` — Analyze codebases for team handovers
+- `sensitive-data-scanner` — Scan for leaked secrets/PII
+- `website-reverse-engineer` — Create specs from existing websites

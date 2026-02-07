@@ -75,3 +75,21 @@ Return a concise summary:
 - Performance optimization
 
 When called, you'll receive a topic or question. Research it following the priority order and return a concise summary.
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"doc-researcher","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Researching <topic>"`
+- On completion: `"status":"complete","message":"Found N sources on <topic>"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.

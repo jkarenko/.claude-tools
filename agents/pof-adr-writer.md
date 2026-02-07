@@ -76,3 +76,21 @@ The README.md should maintain this table:
 ```
 
 When triggered, you will receive decision context. Extract the key architectural decision and document it following this format precisely.
+
+## Dashboard Reporting
+
+Report progress to the POF dashboard (silently no-ops if not running):
+
+```bash
+curl -s -X POST http://localhost:3456/api/status \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"adr-writer","status":"STATUS","message":"MSG"}' \
+  > /dev/null 2>&1 || true
+```
+
+Report at minimum:
+- On start: `"status":"started","message":"Writing ADR: <title>"`
+- On completion: `"status":"complete","message":"ADR NNNN written"`
+- On error: `"status":"error","message":"<what failed>"`
+
+Include `"phase":"X.X"` if a phase number was provided in your dispatch prompt.
