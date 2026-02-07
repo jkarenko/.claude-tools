@@ -64,7 +64,7 @@ Display the complete POF phase structure for reference.
 
 ## With Current Position
 
-If `.claude/context/state.json` exists, show current position:
+If an active session exists (`.claude/context/.active-session`), read the session file and show current position:
 
 ```markdown
 ## POF Phase Structure

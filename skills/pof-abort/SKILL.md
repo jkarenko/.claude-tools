@@ -37,16 +37,10 @@ Confirm abort? (yes/no)
 
 ### 2. Save State
 
-Update `.claude/context/state.json`:
-```json
-{
-  "currentPhase": "{current}",
-  "status": "paused",
-  "pausedAt": "{ISO timestamp}",
-  "blockers": [],
-  "lastCheckpoint": "{last}"
-}
-```
+Read `.claude/context/.active-session` to get the session ID, then update `.claude/context/sessions/{id}.json`:
+- Set `status` to `"paused"`
+- Add `pausedAt` with current ISO timestamp
+- Set `lastActivity` to current timestamp
 
 ### 3. Cleanup
 
@@ -98,7 +92,7 @@ Are you sure? (yes, discard/no, soft abort)
 
 If confirmed:
 ```bash
-rm -rf .claude/context/
+rm -rf .claude/context/sessions/ .claude/context/.active-session
 ```
 
 ## Abort Reasons

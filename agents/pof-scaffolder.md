@@ -47,22 +47,15 @@ bunx shadcn@latest add button card input form
 ### Creating POF Context Structure
 
 ```bash
-# Create context directory
-mkdir -p .claude/context
+# Create context directory with sessions
+mkdir -p .claude/context/sessions
 mkdir -p docs/adr
+```
 
-# Initialize context files
-cat > .claude/context/state.json << 'EOF'
-{
-  "currentPhase": "0.1",
-  "status": "initializing",
-  "blockers": [],
-  "lastCheckpoint": null,
-  "progressStyle": "inline-persistent",
-  "verbose": false
-}
-EOF
+The session file is created by the kickoff/story skill that invokes this agent. If a session file path is provided in your dispatch prompt (look for `Session file: ...`), update that file's status after scaffolding completes.
 
+```bash
+# Initialize shared context files
 cat > .claude/context/decisions.json << 'EOF'
 {
   "decisions": []

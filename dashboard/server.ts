@@ -23,6 +23,10 @@ interface StatusUpdate {
   message: string;
   detail?: string;
   timestamp?: string;
+  projectId?: string;
+  storyTitle?: string;
+  storyStatus?: string;
+  sessionType?: string;
 }
 
 interface Question {
@@ -40,6 +44,10 @@ interface Question {
 interface SessionState {
   id: string;
   project?: string;
+  projectId?: string;
+  storyTitle?: string;
+  storyStatus?: string;
+  sessionType?: string;
   agents: Map<string, StatusUpdate & { lastSeen: string }>;
   questions: Question[];
   log: (StatusUpdate & { timestamp: string })[];
@@ -133,6 +141,10 @@ function sessionSummary(s: SessionState) {
   return {
     id: s.id,
     project: s.project,
+    projectId: s.projectId,
+    storyTitle: s.storyTitle,
+    storyStatus: s.storyStatus,
+    sessionType: s.sessionType,
     startedAt: s.startedAt,
     lastActivity: s.lastActivity,
     currentPhase,
@@ -142,12 +154,53 @@ function sessionSummary(s: SessionState) {
   };
 }
 
+// --- Bootstrap from disk ---
+
+import { readdirSync, readFileSync, existsSync } from "fs";
+import { join } from "path";
+
+function bootstrapFromDisk() {
+  const sessionsDir = join(process.cwd(), ".claude/context/sessions");
+  if (!existsSync(sessionsDir)) return;
+
+  let projectId: string | undefined;
+  let projectName: string | undefined;
+
+  const projectPath = join(process.cwd(), ".claude/context/project.json");
+  if (existsSync(projectPath)) {
+    try {
+      const proj = JSON.parse(readFileSync(projectPath, "utf-8"));
+      projectId = proj.id;
+      projectName = proj.name;
+    } catch {}
+  }
+
+  for (const file of readdirSync(sessionsDir)) {
+    if (!file.endsWith(".json")) continue;
+    try {
+      const data = JSON.parse(readFileSync(join(sessionsDir, file), "utf-8"));
+      if (!data.id) continue;
+      const session = getOrCreateSession(data.id);
+      session.projectId = data.projectId || projectId;
+      session.project = projectName || data.project;
+      session.storyTitle = data.story?.title;
+      session.storyStatus = data.status;
+      session.sessionType = data.type;
+      session.startedAt = data.createdAt || session.startedAt;
+      session.lastActivity = data.lastActivity || session.lastActivity;
+    } catch {}
+  }
+}
+
+bootstrapFromDisk();
+
 // --- Server ---
 
 const htmlPath = import.meta.dir + "/index.html";
 
 const server = Bun.serve({
   port: PORT,
+  idleTimeout: 60, // SSE heartbeat every 30s keeps connections alive
 
   fetch: async (req) => {
     const url = new URL(req.url);
@@ -205,7 +258,13 @@ const server = Bun.serve({
           );
           controller.enqueue(init);
 
+          // Heartbeat every 30s to prevent Bun's idle timeout
+          const heartbeat = setInterval(() => {
+            controller.enqueue(encoder.encode(": heartbeat\n\n"));
+          }, 30_000);
+
           req.signal.addEventListener("abort", () => {
+            clearInterval(heartbeat);
             sseClients.delete(controller);
           });
         },
@@ -234,6 +293,10 @@ const server = Bun.serve({
       if (body.detail?.startsWith("project:")) {
         session.project = body.detail.replace("project:", "").trim();
       }
+      if (body.projectId) session.projectId = body.projectId;
+      if (body.storyTitle) session.storyTitle = body.storyTitle;
+      if (body.storyStatus) session.storyStatus = body.storyStatus;
+      if (body.sessionType) session.sessionType = body.sessionType;
 
       const timestamp = body.timestamp || new Date().toISOString();
       const entry = { ...body, session: sessionId, timestamp, lastSeen: timestamp };

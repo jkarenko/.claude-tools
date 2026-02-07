@@ -7,32 +7,36 @@ description: Drive POF workflow phases inline. Reads state, dispatches agents, m
 
 You are now driving the POF workflow directly in this conversation. You dispatch specialist agents for focused work, manage user checkpoints, maintain state, and report progress.
 
-## Step 1: Read State
+## Step 1: Read Session State
 
-Read `.claude/context/state.json` to determine current phase. Note the `sessionId` — you'll need it for all dashboard reports and agent dispatches. Also read whichever context files are relevant:
+Read `.claude/context/.active-session` to get the current session ID. Then read `.claude/context/sessions/{id}.json` to determine current phase. The session ID is used for all dashboard reports and agent dispatches. Also read:
 
+- `.claude/context/project.json` — get `projectId` for dashboard reports
 - `.claude/context/requirements.md` — always
 - `.claude/context/decisions.json` — always
 - `.claude/context/architecture.md` — Phase 2+
-- `.claude/context/implementation-plan.md` — Phase 4+
-- `.claude/context/current-story.md` — if `state.mode === "story"`
+- `.claude/context/sessions/{id}-plan.md` — Phase 4+
 
-If `state.mode === "story"`, skip to **Phase 4** (story mode only runs implementation + verification).
+Use `projectId` from `project.json` (or from the session file's `projectId` field) in all dashboard reports and agent dispatches.
+
+If `session.type === "story"`, skip to **Phase 4** (story mode only runs implementation + verification). Story content is in `session.story`.
 
 ## Step 2: Dashboard Report
 
-Report your progress throughout. Use the `sessionId` from `state.json` in every report. This silently no-ops if the dashboard isn't running:
+Report your progress throughout. Use the session `id` from the session file in every report. Include `projectId` and (for story sessions) `storyTitle`, `storyStatus`, and `sessionType`. This silently no-ops if the dashboard isn't running:
 
 ```bash
 curl -s -X POST http://localhost:3456/api/status \
   -H 'Content-Type: application/json' \
-  -d '{"agent":"orchestrator","session":"<sessionId>","phase":"PHASE","status":"working","message":"MSG"}' \
+  -d '{"agent":"orchestrator","session":"<sessionId>","phase":"PHASE","status":"working","message":"MSG","projectId":"<projectId>","sessionType":"<kickoff|story>"}' \
   > /dev/null 2>&1 || true
 ```
 
+For story sessions, also include `"storyTitle":"<title>"` and `"storyStatus":"in_progress"` (or `"completed"` at the end).
+
 Report at every phase transition and agent dispatch.
 
-**When dispatching agents**, always include the session ID in the dispatch prompt so the agent can use it for its own dashboard reports: `"Dashboard session ID: <sessionId>"`
+**When dispatching agents**, always include the session ID and project ID in the dispatch prompt so the agent can use them for its own dashboard reports: `"Dashboard session ID: <sessionId>, Project ID: <projectId>"`
 
 ## Step 3: Execute Current Phase
 
@@ -135,6 +139,7 @@ Skip this phase if the project already has structure (existing project or integr
 
 Dispatch `pof-scaffolder` via Task tool:
 - Provide architecture.md for stack/structure decisions
+- Include: `"Session file: .claude/context/sessions/{id}.json"`
 - Let it create project structure, install dependencies, configure tools
 
 Present scaffolding report to user.
@@ -159,10 +164,11 @@ Then:
 
 Dispatch `pof-implementation-planner` via Task tool:
 - Provide architecture.md, design docs, requirements.md
-- If story mode: provide `current-story.md`
-- Ask it to create a detailed, sequenced plan with tasks
+- If story mode: provide story content from `session.story`
+- Tell it to write the plan to `.claude/context/sessions/{id}-plan.md`
+- Include: `"Session file: .claude/context/sessions/{id}.json"`
 
-It writes to `.claude/context/implementation-plan.md`.
+It writes to `.claude/context/sessions/{id}-plan.md`.
 
 Present implementation plan to user. **CHECKPOINT** — user must approve the plan.
 
@@ -170,7 +176,7 @@ On approval, update state to `4.2`.
 
 **4.2 Iterative Development (TDD)**
 
-Read `implementation-plan.md`. For each task in the plan, follow a test-driven cycle:
+Read `sessions/{id}-plan.md`. For each task in the plan, follow a test-driven cycle:
 
 1. **Write tests first** — dispatch `pof-test-writer` with the task description and architecture context. It writes unit tests that define expected behavior (these will fail initially).
 2. **Implement** the feature — write the code yourself in the main conversation to make the tests pass.
@@ -280,7 +286,7 @@ Present workflow summary:
 - Commits created
 - Deployment status
 
-Update state: `{ "currentPhase": "complete", "status": "done" }`
+Update session file: set `currentPhase` to `"complete"`, `status` to `"completed"`, `lastActivity` to current timestamp
 
 Dispatch `pof-git-committer`: final documentation commit.
 
@@ -315,11 +321,10 @@ left off.
 
 After Phase 4 completes in story mode:
 
-1. Verify all acceptance criteria in `current-story.md` are met
+1. Verify all acceptance criteria from `session.story.criteria` are met
 2. Dispatch `pof-adr-writer` if architectural decisions were made during implementation
-3. Archive story to `.claude/context/stories/{date}-{slug}.md`
-4. Update `current-story.md` status to `done`
-5. Reset state: `{ "currentPhase": "idle", "status": "ready", "mode": null, "lastStory": "{slug}" }`
+3. Archive story to `.claude/context/stories/{date}-{slug}.md` (write story details from session file)
+4. Update session file: set `status` to `"completed"`, `currentPhase` to `"idle"`, `lastActivity` to current timestamp
 
 Present story completion summary, then show next-steps options:
 
@@ -357,29 +362,16 @@ All commits use conventional format with mandatory scope: `type(scope): descript
 
 ## State Management
 
-After each step, update `.claude/context/state.json`:
+After each step, update the active session file at `.claude/context/sessions/{id}.json`. Update `currentPhase`, `status`, `lastCheckpoint`, `blockers`, and `lastActivity` as needed.
 
-```json
-{
-  "currentPhase": "X.X",
-  "status": "in_progress",
-  "sessionId": "<current session ID>",
-  "lastCheckpoint": "X.X",
-  "blockers": [],
-  "progressStyle": "inline-persistent",
-  "verbose": false,
-  "mode": null
-}
-```
-
-Also update `.claude/context/decisions.json` when decisions are made at checkpoints.
+Also update `.claude/context/decisions.json` when decisions are made at checkpoints (include `sessionId` in new entries).
 
 ## Communication Style
 
 - **Terse between checkpoints**: brief progress updates, no unnecessary explanation
 - **Detailed at checkpoints**: summarize work, present decisions clearly, outline next phase
 - **Always state what's next**: after each step, tell the user what comes next
-- **Respect verbose mode**: if `state.verbose === true`, explain agent reasoning in detail
+- **Respect verbose mode**: if `session.verbose === true`, explain agent reasoning in detail
 
 ## Error Handling
 

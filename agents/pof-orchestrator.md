@@ -85,25 +85,32 @@ Dispatch to these agents using the **Task tool** (MCP tool invocation, NOT a bas
 
 ## State Management
 
-Maintain these files in `.claude/context/`:
+State is stored per-session in `.claude/context/sessions/`. Read `.claude/context/.active-session` to get the current session ID, then read/write `.claude/context/sessions/{id}.json`.
 
-**state.json**:
+**Session file** (`sessions/{id}.json`):
 ```json
 {
+  "id": "pof-a3f8",
+  "type": "kickoff",
   "currentPhase": "1.2",
   "status": "in_progress",
-  "blockers": [],
   "lastCheckpoint": "0.4",
-  "progressStyle": "inline-persistent"
+  "blockers": [],
+  "verbose": false,
+  "createdAt": "...",
+  "lastActivity": "...",
+  "project": "...",
+  "story": null
 }
 ```
 
-**decisions.json**:
+**decisions.json** (shared, append-only):
 ```json
 {
   "decisions": [
     {
       "id": "d001",
+      "sessionId": "pof-a3f8",
       "timestamp": "2025-01-24T12:00:00Z",
       "phase": "1.3",
       "summary": "Use Next.js App Router",
@@ -116,7 +123,7 @@ Maintain these files in `.claude/context/`:
 ## Dashboard Reporting
 
 Report progress to the POF dashboard (silently no-ops if not running).
-Use the `sessionId` from `state.json` in all reports.
+Use the session `id` from the active session file in all reports.
 
 ```bash
 curl -s -X POST http://localhost:3456/api/status \
@@ -169,17 +176,17 @@ At each CHECKPOINT:
 
 - **Terse by default**: Short, factual updates
 - **Explain when needed**: If user wasn't involved in a decision, explain what and why
-- **Respect verbose mode**: Check state.json for verbosity setting
+- **Respect verbose mode**: Check session file for `verbose` setting
 
 ## Story Mode
 
-When `state.json` contains `"mode": "story"`, you're in story mode — a lighter workflow for adding features to an existing project. Only run phases 4-5 (implementation + verification).
+When the session file has `"type": "story"`, you're in story mode — a lighter workflow for adding features to an existing project. Only run phases 4-5 (implementation + verification). Story content is in `session.story`.
 
 **Story completion**:
-1. Verify all acceptance criteria met
+1. Verify all acceptance criteria from `session.story.criteria` met
 2. Create conventional commit(s)
 3. Write ADR if architectural decisions were made
 4. Archive story to `.claude/context/stories/{date}-{slug}.md`
-5. Reset state to idle
+5. Update session status to `"completed"`
 
-Always begin by reading `.claude/context/state.json` to understand current workflow state.
+Always begin by reading `.claude/context/.active-session` then `.claude/context/sessions/{id}.json` to understand current workflow state.

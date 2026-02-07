@@ -92,11 +92,14 @@ POF is for structured development with documentation, not every interaction.
 **ADRs**: Architecture Decision Records in `docs/adr/`. Created automatically for significant decisions. Permanent documentation of why choices were made.
 
 **State**: Workflow state in `.claude/context/`:
-- `state.json` - Current phase
-- `decisions.json` - Decisions made
+- `sessions/{id}.json` - Per-session state (phase, status, story)
+- `sessions/{id}-plan.md` - Implementation plan for a session
+- `.active-session` - Current session ID pointer
+- `decisions.json` - Decisions made (shared, with sessionId per entry)
 - `architecture.md` - Approved architecture
-- `implementation-plan.md` - Current plan
-- `current-story.md` - Active story (if using /pof-story)
+- `stories/` - Archived completed stories
+
+Multiple sessions can run in parallel — each Claude Code terminal gets its own session file.
 
 ## Tips
 

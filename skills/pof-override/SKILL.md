@@ -29,10 +29,11 @@ I'll proceed with your choice. Please note any caveats that were mentioned.
 
 ### 2. Record the Override
 
-Update `.claude/context/decisions.json`:
+Read `.claude/context/.active-session` to get the session ID. Update `.claude/context/decisions.json`:
 ```json
 {
   "id": "d00X",
+  "sessionId": "<from .active-session>",
   "timestamp": "...",
   "phase": "...",
   "summary": "{chosen option}",

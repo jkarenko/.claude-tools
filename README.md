@@ -136,6 +136,9 @@ A workflow system for orchestrated project development. POF manages multi-phase 
 # Add a feature to existing project
 /pof-story As a user, I want to filter products by category
 
+# Plan a story for later (don't start it)
+/pof-story --plan As a user, I want to export data as CSV
+
 # Quick bug fix
 /pof-story --quick Fix timezone display in dashboard
 
@@ -208,7 +211,7 @@ All agents report progress to the dashboard via `curl` (silently no-ops if dashb
 
 ### Dashboard
 
-Real-time monitoring UI for the POF workflow. Supports multiple simultaneous sessions — each Claude Code conversation gets its own session ID, and the dashboard shows all active sessions in a sidebar.
+Real-time monitoring UI for the POF workflow. Supports a **Project > Story > Agent** hierarchy — the dashboard groups sessions by project, shows stories in Active/Upcoming/Completed rows, and lets you drill into individual story detail views.
 
 ```bash
 # Start manually (kickoff starts it automatically)
@@ -219,10 +222,11 @@ open http://localhost:3456
 ```
 
 Features:
-- **Multi-session sidebar** — switch between active sessions, see project name, phase, and agent count at a glance
-- Phase progress stepper per session
+- **Project sidebar** — switch between projects, see active story count and pending questions
+- **Project view** — three story rows (Active, Upcoming, Completed) with clickable story cards
+- **Story detail** — drill into a story to see phase stepper, agent cards, activity log, and questions
+- **Bootstrap from disk** — reads `.claude/context/sessions/` on startup so stories survive server restarts
 - Agent cards with live status and colors
-- Activity log with timestamps
 - Question/answer panel for async two-way communication
 - Auto-reconnecting SSE stream
 - Stale sessions auto-expire after 4 hours of inactivity
@@ -248,13 +252,18 @@ POF maintains state in `.claude/context/`:
 
 | File | Purpose |
 |------|---------|
-| `state.json` | Current phase, status, mode, session ID |
-| `decisions.json` | Recorded architectural decisions |
+| `project.json` | Project identity (`id`, `name`, `createdAt`) — links sessions together |
+| `sessions/{id}.json` | Per-session state (phase, status, story content, `projectId`) |
+| `sessions/{id}-plan.md` | Implementation plan for a session |
+| `.active-session` | Current session ID pointer |
+| `decisions.json` | Recorded architectural decisions (shared, with sessionId) |
 | `requirements.md` | Project requirements |
 | `architecture.md` | Approved architecture |
-| `implementation-plan.md` | Current implementation plan |
-| `current-story.md` | Active user story |
 | `stories/` | Archived completed stories |
+
+Each Claude Code terminal gets its own session file, enabling parallel stories and independent pause/resume with no state conflicts. The `projectId` field links all sessions to the same project for dashboard grouping.
+
+Stories can be in one of these statuses: `planned` (defined but not started), `in_progress`, `paused`, `completed`, `error`.
 
 ### ADR Convention
 

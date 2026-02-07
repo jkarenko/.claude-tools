@@ -80,7 +80,7 @@ What do you want to do for auth? There are many options like OAuth, passwords, m
 
 ## Recording Clarifications
 
-After user responds, record the decision in `.claude/context/decisions.json` if it's architectural, or just proceed if it's minor.
+After user responds, read `.claude/context/.active-session` to get the session ID. Record the decision in `.claude/context/decisions.json` (include `sessionId` field) if it's architectural, or just proceed if it's minor.
 
 ## Escalation
 

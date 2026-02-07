@@ -13,19 +13,31 @@ When user asks "where are we?" or wants a status update.
 
 ## Process
 
-1. Read `.claude/context/state.json`
-2. Read `.claude/context/decisions.json`
-3. Present current status
+1. Read `.claude/context/project.json` for project name and ID (if exists)
+2. Read `.claude/context/.active-session` to get the current session ID
+3. Read `.claude/context/sessions/{id}.json` for session state
+4. Read `.claude/context/decisions.json`
+5. Present current status with project context
+6. List all stories with their statuses (active, planned, completed)
 
 ## Output Format
 
 ```markdown
 ## POF Progress
 
+**Project**: {project name} ({projectId})
 **Current Phase**: {phase number} - {phase name}
 **Status**: {in_progress/blocked/waiting_for_input}
 
-### Phase Map
+### Stories
+| Status | Story | Session | Phase |
+|--------|-------|---------|-------|
+| ▶ active | filter products | pof-b7e2 | 4.2 |
+| ⏸ paused | reset password | pof-c4d1 | 2.4 |
+| 📋 planned | export CSV | pof-d9e3 | — |
+| ✓ done | user login | pof-e1f4 | — |
+
+### Phase Map (active session)
 
 PHASE 0: INITIALIZATION ✓
 PHASE 1: ARCHITECTURE ✓
@@ -52,23 +64,28 @@ PHASE 6: HANDOFF
 {What happens next}
 ```
 
-## State File
+## Session File
 
-Read from `.claude/context/state.json`:
+Read from `.claude/context/sessions/{id}.json`:
 ```json
 {
+  "id": "pof-a3f8",
+  "type": "kickoff",
   "currentPhase": "2.3",
   "status": "in_progress",
-  "blockers": [],
   "lastCheckpoint": "1.5",
-  "progressStyle": "inline-persistent",
-  "verbose": false
+  "blockers": [],
+  "verbose": false,
+  "createdAt": "...",
+  "lastActivity": "...",
+  "project": "...",
+  "story": null
 }
 ```
 
-## If No State File
+## If No Active Session
 
-If `.claude/context/state.json` doesn't exist:
+If `.claude/context/.active-session` doesn't exist or `.claude/context/sessions/` is empty:
 
 ```markdown
 ## POF Progress

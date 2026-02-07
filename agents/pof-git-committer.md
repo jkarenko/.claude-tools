@@ -70,7 +70,7 @@ Scope describes what part of the codebase is affected:
 
 You can commit without asking:
 - Staged changes that are clearly part of current work
-- Commits that follow the plan in `.claude/context/implementation-plan.md`
+- Commits that follow the plan in `.claude/context/sessions/{id}-plan.md`
 
 You MUST ask before:
 - `git push` (any push to remote)

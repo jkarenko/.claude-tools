@@ -15,13 +15,13 @@ Check the current directory:
 ```bash
 ls -la
 cat package.json 2>/dev/null
-ls .claude/context/ 2>/dev/null
+ls .claude/context/sessions/ 2>/dev/null
 ```
 
 Determine state:
 - **Green-field**: Empty or minimal files
 - **Existing project**: Has package.json, source code
-- **Resuming**: Has `.claude/context/state.json` → redirect to `/pof-resume`
+- **Resuming**: Has `.claude/context/sessions/` with session files → redirect to `/pof-resume`
 - **Integration**: User mentions adding to existing system
 
 ### Step 2: Initialize Git
@@ -45,26 +45,45 @@ Ask the user (if not already provided):
 
 Create the POF context structure:
 ```bash
-mkdir -p .claude/context docs/adr
+mkdir -p .claude/context/sessions docs/adr
 ```
 
-Generate a short session ID for dashboard routing: `pof-` followed by 4 random hex chars (e.g., `pof-a3f8`).
+Generate a short project ID: `proj-` followed by 4 random hex chars (e.g., `proj-a3f8`).
 
-Initialize `.claude/context/state.json`:
+Create **project file** at `.claude/context/project.json`:
 ```json
 {
-  "currentPhase": "0.1",
-  "status": "initializing",
-  "sessionId": "<generated session ID, e.g. pof-a3f8>",
-  "blockers": [],
-  "lastCheckpoint": null,
-  "progressStyle": "inline-persistent",
-  "verbose": false,
-  "startedAt": "<current ISO timestamp>"
+  "id": "proj-a3f8",
+  "name": "<project name or description>",
+  "createdAt": "<current ISO timestamp>"
 }
 ```
 
-Initialize `.claude/context/decisions.json`:
+If `.claude/context/project.json` already exists, read it and use the existing project ID and name instead of generating new ones.
+
+Generate a short session ID: `pof-` followed by 4 random hex chars (e.g., `pof-b7e2`).
+
+Initialize the **session file** at `.claude/context/sessions/{id}.json`:
+```json
+{
+  "id": "pof-b7e2",
+  "projectId": "proj-a3f8",
+  "type": "kickoff",
+  "currentPhase": "0.1",
+  "status": "initializing",
+  "blockers": [],
+  "lastCheckpoint": null,
+  "verbose": false,
+  "createdAt": "<current ISO timestamp>",
+  "lastActivity": "<current ISO timestamp>",
+  "project": "<project name or description>",
+  "story": null
+}
+```
+
+Write the session ID to `.claude/context/.active-session` (just the ID string, e.g., `pof-b7e2`).
+
+Initialize `.claude/context/decisions.json` (shared across sessions):
 ```json
 {
   "decisions": []
@@ -90,7 +109,7 @@ Send an initial status report with the project name so the dashboard can label t
 ```bash
 curl -s -X POST http://localhost:3456/api/status \
   -H 'Content-Type: application/json' \
-  -d '{"agent":"orchestrator","session":"<sessionId>","status":"started","message":"Kickoff started","detail":"project:<project name>"}' \
+  -d '{"agent":"orchestrator","session":"<sessionId>","status":"started","message":"Kickoff started","detail":"project:<project name>","projectId":"<projectId>","sessionType":"kickoff"}' \
   > /dev/null 2>&1 || true
 ```
 
@@ -145,7 +164,7 @@ PHASE 6: HANDOFF
 
 Commit the POF context files:
 ```bash
-git add .claude/context/ docs/adr/
+git add .claude/context/project.json .claude/context/sessions/ .claude/context/.active-session .claude/context/decisions.json .claude/context/requirements.md docs/adr/
 git commit -m "chore(pof): initialize project orchestration context"
 ```
 
@@ -167,7 +186,7 @@ Present the checkpoint:
 
 After user approves Checkpoint 0.4:
 
-1. Update state: `{ "currentPhase": "1.1", "status": "in_progress", "lastCheckpoint": "0.4" }`
+1. Update session file: set `currentPhase` to `"1.1"`, `status` to `"in_progress"`, `lastCheckpoint` to `"0.4"`, and `lastActivity` to current timestamp
 2. Inform the user: "Starting Phase 1: Architecture..."
 3. Continue directly with the `/pof-orchestrate` instructions — read and follow the orchestrate skill logic to begin Phase 1.
 

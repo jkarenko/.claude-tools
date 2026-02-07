@@ -119,7 +119,7 @@
       min-height: 0;
     }
 
-    /* --- Sidebar --- */
+    /* --- Sidebar (Projects) --- */
 
     .sidebar {
       width: var(--sidebar-w);
@@ -140,12 +140,12 @@
       color: var(--text-2);
     }
 
-    .session-list {
+    .project-list {
       flex: 1;
       padding: 0 8px;
     }
 
-    .session-item {
+    .project-item {
       padding: 10px 12px;
       border-radius: 8px;
       cursor: pointer;
@@ -154,16 +154,16 @@
       border: 1px solid transparent;
     }
 
-    .session-item:hover {
+    .project-item:hover {
       background: var(--bg-2);
     }
 
-    .session-item.active {
+    .project-item.active {
       background: var(--bg-2);
       border-color: var(--accent);
     }
 
-    .session-name {
+    .project-name {
       font-size: 13px;
       font-weight: 600;
       color: var(--text-0);
@@ -173,7 +173,7 @@
       white-space: nowrap;
     }
 
-    .session-meta {
+    .project-meta {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -182,19 +182,11 @@
       color: var(--text-2);
     }
 
-    .session-phase {
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      background: rgba(217, 70, 239, 0.12);
-      color: var(--accent);
-    }
-
-    .session-agents {
+    .project-stories {
       color: var(--text-2);
     }
 
-    .session-badge {
+    .project-badge {
       width: 8px;
       height: 8px;
       border-radius: 50%;
@@ -235,6 +227,177 @@
       font-size: 36px;
       color: var(--border-bright);
       animation: glow 3s ease-in-out infinite;
+    }
+
+    /* --- Project View (story rows) --- */
+
+    .project-view {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+    }
+
+    .project-header {
+      margin-bottom: 24px;
+    }
+
+    .project-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-0);
+      margin-bottom: 4px;
+    }
+
+    .project-header-meta {
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--text-2);
+    }
+
+    .story-row {
+      margin-bottom: 24px;
+    }
+
+    .story-row-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .story-row-header h3 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-2);
+    }
+
+    .story-row-count {
+      font-size: 11px;
+      font-family: var(--mono);
+      padding: 1px 8px;
+      border-radius: 10px;
+      background: var(--bg-3);
+      color: var(--text-2);
+    }
+
+    .story-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .story-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .story-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 8px rgba(217, 70, 239, 0.1);
+    }
+
+    .story-card.active {
+      border-color: var(--accent);
+      box-shadow: inset 0 1px 0 0 rgba(217, 70, 239, 0.1);
+    }
+
+    .story-card.planned {
+      border-color: var(--border);
+      opacity: 0.7;
+    }
+
+    .story-card.planned:hover {
+      opacity: 1;
+      border-color: var(--blue);
+    }
+
+    .story-card.completed {
+      border-color: var(--green);
+      opacity: 0.6;
+    }
+
+    .story-card.completed:hover {
+      opacity: 0.8;
+    }
+
+    .story-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-0);
+      margin-bottom: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .story-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text-2);
+    }
+
+    .story-status-badge {
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .story-status-badge.in_progress { background: rgba(217, 70, 239, 0.12); color: var(--accent); }
+    .story-status-badge.implementing { background: rgba(217, 70, 239, 0.12); color: var(--accent); }
+    .story-status-badge.working { background: rgba(217, 70, 239, 0.12); color: var(--accent); }
+    .story-status-badge.paused { background: rgba(234, 179, 8, 0.12); color: var(--yellow); }
+    .story-status-badge.planned { background: rgba(59, 130, 246, 0.12); color: var(--blue); }
+    .story-status-badge.completed { background: rgba(34, 197, 94, 0.12); color: var(--green); }
+    .story-status-badge.complete { background: rgba(34, 197, 94, 0.12); color: var(--green); }
+    .story-status-badge.error { background: rgba(239, 68, 68, 0.12); color: var(--red); }
+    .story-status-badge.blocked { background: rgba(234, 179, 8, 0.12); color: var(--yellow); }
+    .story-status-badge.initializing { background: rgba(59, 130, 246, 0.12); color: var(--blue); }
+
+    .story-row-empty {
+      padding: 16px;
+      color: var(--text-2);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    /* --- Back Button --- */
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-1);
+      color: var(--text-1);
+      font-size: 12px;
+      font-family: var(--sans);
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 16px;
+    }
+
+    .back-btn:hover {
+      background: var(--bg-2);
+      border-color: var(--accent);
+      color: var(--text-0);
     }
 
     /* --- Phase Stepper --- */
@@ -672,11 +835,13 @@
       :root { --sidebar-w: 180px; }
       header { padding: 12px 16px; }
       .session-detail { padding: 0 16px 32px; }
+      .project-view { padding: 16px; }
       .phase-bar { padding: 16px 8px; }
       .step-line { width: 20px; }
       .step-dot { width: 24px; height: 24px; font-size: 10px; }
       .step-label { font-size: 9px; }
       .agents-grid { grid-template-columns: 1fr; }
+      .story-cards { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 540px) {
@@ -700,17 +865,17 @@
 
   <div class="app-layout">
     <aside class="sidebar">
-      <div class="sidebar-header">Sessions</div>
-      <div class="session-list" id="sessionList">
-        <div class="sidebar-empty" id="sidebarEmpty">No active sessions</div>
+      <div class="sidebar-header">Projects</div>
+      <div class="project-list" id="projectList">
+        <div class="sidebar-empty" id="sidebarEmpty">No active projects</div>
       </div>
     </aside>
 
     <div class="main-content" id="mainContent">
       <div class="no-session" id="noSession">
         <span class="empty-icon">&#9671;</span>
-        <span>Waiting for sessions...</span>
-        <span style="font-size:12px;color:var(--text-2)">Sessions appear when agents report activity</span>
+        <span>Waiting for projects...</span>
+        <span style="font-size:12px;color:var(--text-2)">Projects appear when agents report activity</span>
       </div>
     </div>
   </div>
@@ -747,13 +912,72 @@
 
     // --- State ---
 
-    const sessions = {};  // { sessionId: { agents, questions, log, startedAt, project, currentPhase } }
-    let activeSessionId = null;
+    const sessions = {};
+    let activeProjectId = null;
+    let activeStorySessionId = null;  // null = project view, set = story detail
     let connected = false;
 
     // --- DOM refs ---
 
     const $ = (id) => document.getElementById(id);
+
+    // --- Project grouping ---
+
+    function getProjects() {
+      const projects = {};
+      for (const [id, session] of Object.entries(sessions)) {
+        const pid = session.projectId || session.project || 'unknown';
+        if (!projects[pid]) {
+          projects[pid] = { id: pid, name: session.project || pid, sessions: {} };
+        }
+        projects[pid].sessions[id] = session;
+        // Use the best name available
+        if (session.project && session.project !== pid) {
+          projects[pid].name = session.project;
+        }
+      }
+      return projects;
+    }
+
+    function getStoryRows(project) {
+      const active = [], upcoming = [], completed = [];
+      for (const s of Object.values(project.sessions)) {
+        const status = s.storyStatus || s.sessionStatus || '';
+        const type = s.sessionType || '';
+        if (type === 'kickoff') continue; // shown in header
+        if (status === 'completed' || status === 'complete') completed.push(s);
+        else if (status === 'planned') upcoming.push(s);
+        else active.push(s); // in_progress, paused, error, blocked, implementing
+      }
+      return { active, upcoming, completed };
+    }
+
+    function getKickoffSession(project) {
+      for (const s of Object.values(project.sessions)) {
+        if (s.sessionType === 'kickoff') return s;
+      }
+      return null;
+    }
+
+    function getProjectPendingQuestions(project) {
+      let count = 0;
+      for (const s of Object.values(project.sessions)) {
+        count += (s.questions || []).filter(q => !q.answered).length;
+      }
+      return count;
+    }
+
+    function getProjectActiveStories(project) {
+      let count = 0;
+      for (const s of Object.values(project.sessions)) {
+        const status = s.storyStatus || '';
+        const type = s.sessionType || '';
+        if (type !== 'kickoff' && status !== 'completed' && status !== 'complete' && status !== 'planned') {
+          count++;
+        }
+      }
+      return count;
+    }
 
     // --- SSE Connection ---
 
@@ -765,23 +989,30 @@
 
       eventSource.addEventListener('init', (e) => {
         const data = JSON.parse(e.data);
-        // Load all sessions from server
         for (const [id, sData] of Object.entries(data.sessions || {})) {
           sessions[id] = {
+            id: id,
             agents: sData.agents || {},
             questions: sData.questions || [],
             log: sData.log || [],
             startedAt: sData.startedAt,
             project: sData.project,
+            projectId: sData.projectId,
+            storyTitle: sData.storyTitle,
+            storyStatus: sData.storyStatus,
+            sessionType: sData.sessionType,
             currentPhase: sData.currentPhase || '0',
             activeAgents: sData.activeAgents || 0,
             pendingQuestions: sData.pendingQuestions || 0,
           };
         }
         connected = true;
-        // Auto-select first session if none selected
-        const ids = Object.keys(sessions);
-        if (!activeSessionId && ids.length > 0) activeSessionId = ids[0];
+        // Auto-select first project if none selected
+        if (!activeProjectId) {
+          const projects = getProjects();
+          const pids = Object.keys(projects);
+          if (pids.length > 0) activeProjectId = pids[0];
+        }
         renderAll();
       });
 
@@ -791,6 +1022,11 @@
         ensureSession(sid);
         sessions[sid].agents[update.agent] = update;
         sessions[sid].log.push(update);
+        // Update session-level fields from the status update
+        if (update.projectId) sessions[sid].projectId = update.projectId;
+        if (update.storyTitle) sessions[sid].storyTitle = update.storyTitle;
+        if (update.storyStatus) sessions[sid].storyStatus = update.storyStatus;
+        if (update.sessionType) sessions[sid].sessionType = update.sessionType;
         if (update.phase) {
           const p = update.phase.split('.')[0];
           if (parseInt(p) > parseInt(sessions[sid].currentPhase || '0')) {
@@ -798,11 +1034,14 @@
           }
         }
         renderSidebar();
-        if (sid === activeSessionId) {
+        if (sid === activeStorySessionId) {
           renderAgent(update.agent);
           appendLogEntry(update);
           renderPhases();
           updateAgentCount();
+        } else if (!activeStorySessionId && activeProjectId) {
+          // We're on project view — re-render story rows
+          renderMainContent();
         }
       });
 
@@ -812,7 +1051,7 @@
         ensureSession(sid);
         sessions[sid].questions.push(q);
         renderSidebar();
-        if (sid === activeSessionId) renderQuestions();
+        if (sid === activeStorySessionId) renderQuestions();
       });
 
       eventSource.addEventListener('answer', (e) => {
@@ -822,34 +1061,40 @@
           const idx = sessions[sid].questions.findIndex(q => q.id === answered.id);
           if (idx >= 0) sessions[sid].questions[idx] = answered;
           renderSidebar();
-          if (sid === activeSessionId) renderQuestions();
+          if (sid === activeStorySessionId) renderQuestions();
         }
       });
 
       eventSource.addEventListener('session-new', (e) => {
         const data = JSON.parse(e.data);
         ensureSession(data.id);
-        if (!activeSessionId) {
-          activeSessionId = data.id;
+        if (!activeProjectId) {
+          const projects = getProjects();
+          const pids = Object.keys(projects);
+          if (pids.length > 0) activeProjectId = pids[0];
           renderAll();
         } else {
           renderSidebar();
+          if (!activeStorySessionId) renderMainContent();
         }
       });
 
       eventSource.addEventListener('session-removed', (e) => {
         const data = JSON.parse(e.data);
         delete sessions[data.id];
-        if (activeSessionId === data.id) {
-          const ids = Object.keys(sessions);
-          activeSessionId = ids.length > 0 ? ids[0] : null;
+        if (activeStorySessionId === data.id) activeStorySessionId = null;
+        const projects = getProjects();
+        if (!projects[activeProjectId]) {
+          const pids = Object.keys(projects);
+          activeProjectId = pids.length > 0 ? pids[0] : null;
         }
         renderAll();
       });
 
       eventSource.addEventListener('reset', () => {
         for (const k of Object.keys(sessions)) delete sessions[k];
-        activeSessionId = null;
+        activeProjectId = null;
+        activeStorySessionId = null;
         renderAll();
       });
 
@@ -874,11 +1119,16 @@
     function ensureSession(id) {
       if (!sessions[id]) {
         sessions[id] = {
+          id: id,
           agents: {},
           questions: [],
           log: [],
           startedAt: new Date().toISOString(),
           project: null,
+          projectId: null,
+          storyTitle: null,
+          storyStatus: null,
+          sessionType: null,
           currentPhase: '0',
         };
       }
@@ -889,7 +1139,7 @@
     function renderAll() {
       renderConnectionStatus();
       renderSidebar();
-      renderSessionDetail();
+      renderMainContent();
     }
 
     function renderConnectionStatus() {
@@ -905,57 +1155,171 @@
     }
 
     function renderSidebar() {
-      const list = $('sessionList');
-      const ids = Object.keys(sessions);
+      const list = $('projectList');
+      const projects = getProjects();
+      const pids = Object.keys(projects);
 
-      if (ids.length === 0) {
-        list.innerHTML = '<div class="sidebar-empty">No active sessions</div>';
+      if (pids.length === 0) {
+        list.innerHTML = '<div class="sidebar-empty">No active projects</div>';
         return;
       }
 
-      list.innerHTML = ids.map(id => {
-        const s = sessions[id];
-        const isActive = id === activeSessionId;
-        const name = s.project || id;
-        const phase = s.currentPhase || '0';
-        const activeCount = Object.values(s.agents).filter(
-          a => a.status === 'working' || a.status === 'started'
-        ).length;
-        const pending = s.questions.filter(q => !q.answered).length;
+      list.innerHTML = pids.map(pid => {
+        const p = projects[pid];
+        const isActive = pid === activeProjectId;
+        const activeStories = getProjectActiveStories(p);
+        const pending = getProjectPendingQuestions(p);
 
-        return `<div class="session-item${isActive ? ' active' : ''}" onclick="selectSession('${esc(id)}')">
-          <div class="session-name">${esc(name)}</div>
-          <div class="session-meta">
-            <span class="session-phase">P${phase}</span>
-            <span class="session-agents">${activeCount > 0 ? activeCount + ' active' : Object.keys(s.agents).length + ' agents'}</span>
-            ${pending > 0 ? '<span class="session-badge" title="' + pending + ' pending question(s)"></span>' : ''}
+        return `<div class="project-item${isActive ? ' active' : ''}" onclick="selectProject('${esc(pid)}')">
+          <div class="project-name">${esc(p.name)}</div>
+          <div class="project-meta">
+            <span class="project-stories">${activeStories > 0 ? activeStories + ' active' : Object.keys(p.sessions).length + ' sessions'}</span>
+            ${pending > 0 ? '<span class="project-badge" title="' + pending + ' pending question(s)"></span>' : ''}
           </div>
         </div>`;
       }).join('');
     }
 
-    function renderSessionDetail() {
-      const main = $('mainContent');
-      const noSession = $('noSession');
-
-      if (!activeSessionId || !sessions[activeSessionId]) {
+    function renderMainContent() {
+      if (activeStorySessionId && sessions[activeStorySessionId]) {
+        renderStoryDetail();
+      } else if (activeProjectId) {
+        renderProjectView();
+      } else {
+        const main = $('mainContent');
         main.innerHTML = `<div class="no-session">
           <span class="empty-icon">&#9671;</span>
-          <span>Waiting for sessions...</span>
-          <span style="font-size:12px;color:var(--text-2)">Sessions appear when agents report activity</span>
+          <span>Waiting for projects...</span>
+          <span style="font-size:12px;color:var(--text-2)">Projects appear when agents report activity</span>
+        </div>`;
+      }
+    }
+
+    // --- Project View (story rows) ---
+
+    function renderProjectView() {
+      const main = $('mainContent');
+      const projects = getProjects();
+      const project = projects[activeProjectId];
+
+      if (!project) {
+        main.innerHTML = `<div class="no-session">
+          <span class="empty-icon">&#9671;</span>
+          <span>Project not found</span>
         </div>`;
         return;
       }
 
-      const s = sessions[activeSessionId];
-      const name = s.project || activeSessionId;
+      const kickoff = getKickoffSession(project);
+      const { active, upcoming, completed } = getStoryRows(project);
+
+      let kickoffHtml = '';
+      if (kickoff) {
+        const status = kickoff.storyStatus || kickoff.sessionStatus || 'active';
+        kickoffHtml = `Kickoff: ${status} &middot; Started ${timeAgo(kickoff.startedAt)}`;
+      }
 
       main.innerHTML = `
-        <nav class="phase-bar" id="phaseBar"></nav>
-        <div class="session-detail">
+        <div class="project-view">
+          <div class="project-header">
+            <h2>${esc(project.name)}</h2>
+            <div class="project-header-meta">${kickoffHtml}</div>
+          </div>
+
+          <div class="story-row">
+            <div class="story-row-header">
+              <h3>Active</h3>
+              <span class="story-row-count">${active.length}</span>
+            </div>
+            <div class="story-cards" id="activeStories">
+              ${active.length === 0 ? '<div class="story-row-empty">No active stories</div>' : active.map(s => storyCardHtml(s, 'active')).join('')}
+            </div>
+          </div>
+
+          <div class="story-row">
+            <div class="story-row-header">
+              <h3>Upcoming</h3>
+              <span class="story-row-count">${upcoming.length}</span>
+            </div>
+            <div class="story-cards" id="upcomingStories">
+              ${upcoming.length === 0 ? '<div class="story-row-empty">No planned stories</div>' : upcoming.map(s => storyCardHtml(s, 'planned')).join('')}
+            </div>
+          </div>
+
+          <div class="story-row">
+            <div class="story-row-header">
+              <h3>Completed</h3>
+              <span class="story-row-count">${completed.length}</span>
+            </div>
+            <div class="story-cards" id="completedStories">
+              ${completed.length === 0 ? '<div class="story-row-empty">No completed stories</div>' : completed.map(s => storyCardHtml(s, 'completed')).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function storyCardHtml(s, cardClass) {
+      const sid = s.id;
+      const title = s.storyTitle || sid;
+      const status = s.storyStatus || s.sessionStatus || 'active';
+      const phase = s.currentPhase || '0';
+      const agentCount = Object.keys(s.agents || {}).length;
+      const activeCount = Object.values(s.agents || {}).filter(
+        a => a.status === 'working' || a.status === 'started'
+      ).length;
+
+      let metaParts = [];
+      if (cardClass === 'active') {
+        metaParts.push(`<span class="story-status-badge ${status}">${statusLabel(status)}</span>`);
+        if (phase !== '0') metaParts.push(`P${phase}`);
+        if (agentCount > 0) metaParts.push(`${activeCount > 0 ? activeCount + ' active' : agentCount + ' agents'}`);
+      } else if (cardClass === 'planned') {
+        metaParts.push(`<span class="story-status-badge planned">planned</span>`);
+      } else {
+        metaParts.push(`<span class="story-status-badge completed">done</span>`);
+      }
+
+      return `<div class="story-card ${cardClass}" onclick="selectStory('${esc(sid)}')">
+        <div class="story-card-title">${esc(title)}</div>
+        <div class="story-card-meta">${metaParts.join(' &middot; ')}</div>
+      </div>`;
+    }
+
+    function statusLabel(status) {
+      const labels = {
+        'in_progress': 'active',
+        'implementing': 'implementing',
+        'working': 'active',
+        'paused': 'paused',
+        'planned': 'planned',
+        'completed': 'done',
+        'complete': 'done',
+        'error': 'error',
+        'blocked': 'blocked',
+        'initializing': 'init',
+      };
+      return labels[status] || status;
+    }
+
+    // --- Story Detail View ---
+
+    function renderStoryDetail() {
+      const main = $('mainContent');
+      const s = sessions[activeStorySessionId];
+      if (!s) { renderProjectView(); return; }
+
+      const title = s.storyTitle || activeStorySessionId;
+
+      main.innerHTML = `
+        <div class="session-detail" style="padding-top:24px">
+          <button class="back-btn" onclick="backToProject()">&larr; Back to project</button>
+
+          <nav class="phase-bar" id="phaseBar"></nav>
+
           <div class="session-title">
-            <h2>${esc(name)}</h2>
-            <span class="session-id">${esc(activeSessionId)}</span>
+            <h2>${esc(title)}</h2>
+            <span class="session-id">${esc(activeStorySessionId)}</span>
             <span class="duration" id="duration">00:00</span>
           </div>
 
@@ -1001,8 +1365,9 @@
 
     function renderPhases() {
       const bar = $('phaseBar');
-      if (!bar || !activeSessionId) return;
-      const s = sessions[activeSessionId];
+      if (!bar || !activeStorySessionId) return;
+      const s = sessions[activeStorySessionId];
+      if (!s) return;
       const cur = parseInt(s.currentPhase) || 0;
 
       bar.innerHTML = PHASES.map((phase, i) => {
@@ -1017,8 +1382,9 @@
 
     function renderAgents() {
       const grid = $('agentsGrid');
-      if (!grid || !activeSessionId) return;
-      const s = sessions[activeSessionId];
+      if (!grid || !activeStorySessionId) return;
+      const s = sessions[activeStorySessionId];
+      if (!s) return;
       const names = Object.keys(s.agents);
 
       if (names.length === 0) {
@@ -1030,8 +1396,9 @@
     }
 
     function renderAgent(name) {
-      if (!activeSessionId) return;
-      const s = sessions[activeSessionId];
+      if (!activeStorySessionId) return;
+      const s = sessions[activeStorySessionId];
+      if (!s) return;
       const data = s.agents[name];
       if (!data) return;
 
@@ -1097,9 +1464,10 @@
 
     function renderLog() {
       const el = $('logEntries');
-      if (!el || !activeSessionId) return;
+      if (!el || !activeStorySessionId) return;
       el.innerHTML = '';
-      const s = sessions[activeSessionId];
+      const s = sessions[activeStorySessionId];
+      if (!s) return;
       for (const entry of s.log) appendLogEntry(entry);
     }
 
@@ -1107,9 +1475,10 @@
       const section = $('questionsSection');
       const list = $('questionsList');
       const countEl = $('questionCount');
-      if (!section || !list || !activeSessionId) return;
+      if (!section || !list || !activeStorySessionId) return;
 
-      const s = sessions[activeSessionId];
+      const s = sessions[activeStorySessionId];
+      if (!s) return;
       const pending = s.questions.filter(q => !q.answered);
       const answered = s.questions.filter(q => q.answered);
 
@@ -1151,8 +1520,9 @@
 
     function updateAgentCount() {
       const el = $('agentCount');
-      if (!el || !activeSessionId) return;
-      const s = sessions[activeSessionId];
+      if (!el || !activeStorySessionId) return;
+      const s = sessions[activeStorySessionId];
+      if (!s) return;
       const total = Object.keys(s.agents).length;
       const active = Object.values(s.agents).filter(
         a => a.status === 'working' || a.status === 'started'
@@ -1162,10 +1532,21 @@
 
     // --- Actions ---
 
-    window.selectSession = function(id) {
-      activeSessionId = id;
+    window.selectProject = function(pid) {
+      activeProjectId = pid;
+      activeStorySessionId = null;
       renderSidebar();
-      renderSessionDetail();
+      renderMainContent();
+    };
+
+    window.selectStory = function(sid) {
+      activeStorySessionId = sid;
+      renderMainContent();
+    };
+
+    window.backToProject = function() {
+      activeStorySessionId = null;
+      renderMainContent();
     };
 
     window.selectOpt = function(qid, btn) {
@@ -1211,13 +1592,15 @@
       const m = Math.floor(s / 60);
       if (m < 60) return m + 'm ago';
       const h = Math.floor(m / 60);
-      return h + 'h ago';
+      if (h < 24) return h + 'h ago';
+      const d = Math.floor(h / 24);
+      return d + 'd ago';
     }
 
     function updateDuration() {
       const el = $('duration');
-      if (!el || !activeSessionId || !sessions[activeSessionId]) return;
-      const start = sessions[activeSessionId].startedAt;
+      if (!el || !activeStorySessionId || !sessions[activeStorySessionId]) return;
+      const start = sessions[activeStorySessionId].startedAt;
       if (!start) { el.textContent = '00:00'; return; }
       const s = Math.floor((Date.now() - new Date(start).getTime()) / 1000);
       const mm = Math.floor(s / 60).toString().padStart(2, '0');

@@ -55,7 +55,7 @@ Checkpoints occur at:
 Handle different responses:
 
 ### "yes" or approval
-- Update state.json to next phase
+- Update session file to next phase
 - Continue with `/pof-orchestrate`
 
 ### "no" or rejection
@@ -73,14 +73,11 @@ Handle different responses:
 
 ## State Update
 
-After approval, update `.claude/context/state.json`:
-```json
-{
-  "lastCheckpoint": "1.5",
-  "currentPhase": "2.1",
-  "status": "in_progress"
-}
-```
+After approval, read `.claude/context/.active-session` to get the session ID, then update `.claude/context/sessions/{id}.json`:
+- Set `lastCheckpoint` to the current checkpoint (e.g., `"1.5"`)
+- Set `currentPhase` to the next phase (e.g., `"2.1"`)
+- Set `status` to `"in_progress"`
+- Set `lastActivity` to current timestamp
 
 ## Example
 

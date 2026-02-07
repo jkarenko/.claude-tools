@@ -81,10 +81,11 @@ Present alternative approaches when there are multiple valid options for a decis
 
 ## After User Chooses
 
-1. Record decision in `.claude/context/decisions.json`
-2. Trigger `pof-adr-writer` if architectural
-3. Update any affected context files
-4. Proceed with chosen option
+1. Read `.claude/context/.active-session` to get the session ID
+2. Record decision in `.claude/context/decisions.json` (include `sessionId` field)
+3. Trigger `pof-adr-writer` if architectural
+4. Update any affected context files
+5. Proceed with chosen option
 
 ## Example
 

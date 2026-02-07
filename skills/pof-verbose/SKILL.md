@@ -36,12 +36,8 @@ Agents will now provide detailed explanations for:
 Use `/pof-verbose` again to toggle off.
 ```
 
-Update `.claude/context/state.json`:
-```json
-{
-  "verbose": true
-}
-```
+Read `.claude/context/.active-session` to get the session ID, then update `.claude/context/sessions/{id}.json`:
+- Set `verbose` to `true`
 
 ### Disable Verbose
 ```markdown
@@ -55,18 +51,12 @@ Agents will now be terse:
 Use `/pof-verbose` again to toggle on.
 ```
 
-Update `.claude/context/state.json`:
-```json
-{
-  "verbose": false
-}
-```
+Read `.claude/context/.active-session` to get the session ID, then update `.claude/context/sessions/{id}.json`:
+- Set `verbose` to `false`
 
 ## Check Current State
 
-```bash
-cat .claude/context/state.json | grep verbose
-```
+Read `.claude/context/.active-session`, then read the session file and check the `verbose` field.
 
 ## Effect on Agents
 

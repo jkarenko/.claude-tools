@@ -103,8 +103,9 @@ Read these for context:
 - `.claude/context/decisions.json` - Decisions made
 - `.claude/context/requirements.md` - Original requirements
 - `docs/adr/` - Architecture Decision Records
+- Session file (path provided in dispatch prompt) - Current session state and story content
 
-Write plan to `.claude/context/implementation-plan.md` for reference.
+Write plan to the session-specific path provided in your dispatch prompt (e.g., `.claude/context/sessions/{id}-plan.md`). If no path is specified, default to `.claude/context/sessions/{id}-plan.md` where `{id}` comes from the session file.
 
 ## Dashboard Reporting
 
