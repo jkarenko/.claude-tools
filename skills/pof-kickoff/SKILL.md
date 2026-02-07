@@ -113,7 +113,7 @@ PHASE 3: SCAFFOLDING (if green-field)
 
 PHASE 4: IMPLEMENTATION
 ├── 4.1 Implementation planning → CHECKPOINT
-├── 4.2 Development cycles (code → test → commit per feature)
+├── 4.2 Development cycles (TDD: write test → implement → run test → commit)
 ├── 4.3 Security review
 └── 4.4 Implementation approval → CHECKPOINT
 

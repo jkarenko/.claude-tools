@@ -233,6 +233,12 @@ API endpoints:
 - `GET /api/state` — full state snapshot
 - `GET /health` — uptime check
 
+### After Completion
+
+When the workflow finishes (Phase 6 or story completion), POF presents a summary with next-steps options. The conversation stays open — you can add features, fix bugs, or ask questions without restarting. In a new session, use `/pof:resume` to pick up where you left off.
+
+Deployment (Phase 5) is optional — if your project doesn't need it, POF offers to skip straight to handoff.
+
 ### Context Files
 
 POF maintains state in `.claude/context/`:

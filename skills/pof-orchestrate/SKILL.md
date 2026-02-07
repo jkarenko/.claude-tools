@@ -200,16 +200,24 @@ After implementation is complete, dispatch `pof-security-reviewer`:
 
 Present implementation summary:
 - Features completed
-- Tests passing
+- Tests passing (unit + integration if run)
 - Commits created
 - Security review results
 
-On approval:
-1. Update state to `5.1`, set `lastCheckpoint: "4.4"`
+Then ask:
+
+> Implementation is complete. **Next up: Phase 5 (Deployment).**
+>
+> Options:
+> 1. **Proceed to deployment** — configure environment, deploy, verify
+> 2. **Skip deployment** — go straight to Phase 6 (Handoff / documentation wrap-up)
+> 3. **Request changes** — revisit implementation
 
 If story mode: skip to **Story Completion** below.
 
-**Continue to Phase 5.**
+On approval for deployment: update state to `5.1`, set `lastCheckpoint: "4.4"`. **Continue to Phase 5.**
+
+On skip deployment: update state to `6.1`, set `lastCheckpoint: "4.4"`. **Continue to Phase 6.**
 
 ---
 
@@ -277,11 +285,26 @@ Dispatch `pof-git-committer`: final documentation commit.
 Show the user their next-steps options:
 
 ```
-| To do this...           | Use this command                        |
-|-------------------------|-----------------------------------------|
-| Add a new feature       | `/pof:story As a user, I want...`       |
-| Quick bug fix           | `/pof:story --quick Fix the...`         |
-| See all commands        | `/pof:guide`                            |
+## Workflow Complete
+
+**Project**: {name/description}
+**Phases completed**: 0–6
+**Total commits**: {N}
+**ADRs written**: {N}
+**Deployment**: {deployed to X / skipped}
+
+| To do this...              | Do this                                  |
+|----------------------------|------------------------------------------|
+| Add a new feature          | `/pof:story As a user, I want...`        |
+| Quick bug fix              | `/pof:story --quick Fix the...`          |
+| Push all commits to remote | `git push`                               |
+| Review decisions made      | See `docs/adr/`                          |
+| See project history        | `git log --oneline`                      |
+| See all commands           | `/pof:guide`                             |
+
+This conversation can continue — ask questions, add features, or start
+a new conversation any time with `/pof:resume` to pick up where you
+left off.
 ```
 
 ---
@@ -296,7 +319,23 @@ After Phase 4 completes in story mode:
 4. Update `current-story.md` status to `done`
 5. Reset state: `{ "currentPhase": "idle", "status": "ready", "mode": null, "lastStory": "{slug}" }`
 
-Present story completion summary.
+Present story completion summary, then show next-steps options:
+
+```
+## Story Complete
+
+**Story**: {story title}
+**Commits**: {N} feature commits
+**Tests**: {pass/fail summary}
+
+| To do this...              | Do this                                  |
+|----------------------------|------------------------------------------|
+| Add another feature        | `/pof:story As a user, I want...`        |
+| Quick bug fix              | `/pof:story --quick Fix the...`          |
+| Push commits to remote     | `git push`                               |
+| See project history        | `git log --oneline`                      |
+| See all commands           | `/pof:guide`                             |
+```
 
 ---
 
