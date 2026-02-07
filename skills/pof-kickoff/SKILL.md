@@ -21,7 +21,7 @@ ls .claude/context/ 2>/dev/null
 Determine state:
 - **Green-field**: Empty or minimal files
 - **Existing project**: Has package.json, source code
-- **Resuming**: Has `.claude/context/state.json` → redirect to `/pof:resume`
+- **Resuming**: Has `.claude/context/state.json` → redirect to `/pof-resume`
 - **Integration**: User mentions adding to existing system
 
 ### Step 2: Initialize Git
@@ -157,9 +157,9 @@ After user approves Checkpoint 0.4:
 
 1. Update state: `{ "currentPhase": "1.1", "status": "in_progress", "lastCheckpoint": "0.4" }`
 2. Inform the user: "Starting Phase 1: Architecture..."
-3. Continue directly with the `/pof:orchestrate` instructions — read and follow the orchestrate skill logic to begin Phase 1.
+3. Continue directly with the `/pof-orchestrate` instructions — read and follow the orchestrate skill logic to begin Phase 1.
 
-**Do not** tell the user to manually run `/pof:orchestrate`. The workflow continues seamlessly from kickoff into orchestration.
+**Do not** tell the user to manually run `/pof-orchestrate`. The workflow continues seamlessly from kickoff into orchestration.
 
 ## Tips
 

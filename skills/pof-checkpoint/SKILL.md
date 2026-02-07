@@ -56,7 +56,7 @@ Handle different responses:
 
 ### "yes" or approval
 - Update state.json to next phase
-- Continue with `/pof:orchestrate`
+- Continue with `/pof-orchestrate`
 
 ### "no" or rejection
 - Ask what needs to change

@@ -47,7 +47,7 @@ A workflow system for orchestrated project development. POF manages multi-phase 
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│  /pof:kickoff                                                        │
+│  /pof-kickoff                                                        │
 │                                                                      │
 │  Detect project state ─► Git init ─► Gather requirements             │
 │  ─► Create .claude/context/ ─► Start dashboard ─► Initial commit     │
@@ -131,22 +131,22 @@ A workflow system for orchestrated project development. POF manages multi-phase 
 
 ```bash
 # New project — full workflow
-/pof:kickoff
+/pof-kickoff
 
 # Add a feature to existing project
-/pof:story As a user, I want to filter products by category
+/pof-story As a user, I want to filter products by category
 
 # Quick bug fix
-/pof:story --quick Fix timezone display in dashboard
+/pof-story --quick Fix timezone display in dashboard
 
 # Resume interrupted workflow
-/pof:resume
+/pof-resume
 ```
 
 ### Story Flow (feature development)
 
 ```
-/pof:story As a user, I want...
+/pof-story As a user, I want...
     │
     ▼
 Parse story ─► Load project context
@@ -168,22 +168,22 @@ Parse story ─► Load project context
 
 | Skill | Purpose |
 |-------|---------|
-| `/pof:kickoff` | Start a new workflow (git init, setup, auto-continues) |
-| `/pof:orchestrate` | Drive workflow phases inline |
-| `/pof:story` | Add a feature via user story |
-| `/pof:resume` | Resume paused workflow |
-| `/pof:progress` | Show current phase and status |
-| `/pof:phase-outline` | Show all phases and sub-steps |
-| `/pof:checkpoint` | Present approval checkpoint |
-| `/pof:clarify` | Ask structured clarifying questions |
-| `/pof:alternatives` | Present multiple options |
-| `/pof:override` | Override a recommendation |
-| `/pof:sources` | Manage documentation sources |
-| `/pof:verbose` | Toggle detailed explanations |
-| `/pof:env-config` | Manage environment variables |
-| `/pof:abort` | Gracefully stop workflow |
-| `/pof:rollback` | Show rollback options |
-| `/pof:guide` | Quick reference for all commands |
+| `/pof-kickoff` | Start a new workflow (git init, setup, auto-continues) |
+| `/pof-orchestrate` | Drive workflow phases inline |
+| `/pof-story` | Add a feature via user story |
+| `/pof-resume` | Resume paused workflow |
+| `/pof-progress` | Show current phase and status |
+| `/pof-phase-outline` | Show all phases and sub-steps |
+| `/pof-checkpoint` | Present approval checkpoint |
+| `/pof-clarify` | Ask structured clarifying questions |
+| `/pof-alternatives` | Present multiple options |
+| `/pof-override` | Override a recommendation |
+| `/pof-sources` | Manage documentation sources |
+| `/pof-verbose` | Toggle detailed explanations |
+| `/pof-env-config` | Manage environment variables |
+| `/pof-abort` | Gracefully stop workflow |
+| `/pof-rollback` | Show rollback options |
+| `/pof-guide` | Quick reference for all commands |
 
 ### POF Agents (14)
 
@@ -235,7 +235,7 @@ API endpoints:
 
 ### After Completion
 
-When the workflow finishes (Phase 6 or story completion), POF presents a summary with next-steps options. The conversation stays open — you can add features, fix bugs, or ask questions without restarting. In a new session, use `/pof:resume` to pick up where you left off.
+When the workflow finishes (Phase 6 or story completion), POF presents a summary with next-steps options. The conversation stays open — you can add features, fix bugs, or ask questions without restarting. In a new session, use `/pof-resume` to pick up where you left off.
 
 Deployment (Phase 5) is optional — if your project doesn't need it, POF offers to skip straight to handoff.
 

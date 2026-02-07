@@ -21,7 +21,7 @@ Read `.claude/context/state.json`.
 
 If no state file exists:
 ```markdown
-No POF workflow state found. Use `/pof:kickoff` to start a new workflow.
+No POF workflow state found. Use `/pof-kickoff` to start a new workflow.
 ```
 
 ### 2. Load Context
@@ -75,7 +75,7 @@ Proceed? (yes/no/review)
 
 ### 5. Handle Response
 
-**"yes"**: Continue directly with the `/pof:orchestrate` instructions — read state, determine phase, and proceed inline. **Do not** spawn a subagent.
+**"yes"**: Continue directly with the `/pof-orchestrate` instructions — read state, determine phase, and proceed inline. **Do not** spawn a subagent.
 
 **"no"**: Ask what they want to do instead.
 
@@ -91,7 +91,7 @@ If state is corrupted or incomplete:
 The workflow state appears incomplete. Options:
 
 1. **Reconstruct from ADRs**: Read docs/adr/ to rebuild decisions
-2. **Start fresh**: Run `/pof:kickoff` (preserves existing code)
+2. **Start fresh**: Run `/pof-kickoff` (preserves existing code)
 3. **Manual fix**: Edit `.claude/context/state.json` directly
 
 What would you like to do?

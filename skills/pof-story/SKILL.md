@@ -10,13 +10,13 @@ Accept a user story and orchestrate feature development without the full kickoff
 ## Usage
 
 ```
-/pof:story As a user, I want to filter products by category so I can find items faster
+/pof-story As a user, I want to filter products by category so I can find items faster
 ```
 
 Or with acceptance criteria:
 
 ```
-/pof:story As a user, I want to reset my password
+/pof-story As a user, I want to reset my password
 - Email with reset link sent within 1 minute
 - Link expires after 24 hours
 - User sees confirmation message
@@ -45,7 +45,7 @@ If no context exists:
 No project context found. This feature needs architectural context first.
 
 Options:
-1. Run `/pof:kickoff` to set up the project
+1. Run `/pof-kickoff` to set up the project
 2. Provide architecture context now (stack, patterns, etc.)
 ```
 
@@ -100,7 +100,7 @@ Update `.claude/context/state.json`:
 }
 ```
 
-**Continue with implementation inline** — follow the `/pof:orchestrate` Phase 4.2 TDD instructions:
+**Continue with implementation inline** — follow the `/pof-orchestrate` Phase 4.2 TDD instructions:
 
 1. Read `implementation-plan.md`
 2. For each task in the plan (TDD cycle):
@@ -132,7 +132,7 @@ Present story completion summary.
 For small stories that don't need UX review:
 
 ```
-/pof:story --quick Fix the login button alignment on mobile
+/pof-story --quick Fix the login button alignment on mobile
 ```
 
 This skips UX designer (Step 4) and goes straight to implementation planning.

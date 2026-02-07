@@ -30,7 +30,7 @@ This will:
 - ✓ Keep all generated code
 - ✗ Stop any running agents
 
-**To resume later**: Use `/pof:resume`
+**To resume later**: Use `/pof-resume`
 
 Confirm abort? (yes/no)
 ```
@@ -62,7 +62,7 @@ Update `.claude/context/state.json`:
 State saved. To resume:
 ```bash
 # In this project directory
-/pof:resume
+/pof-resume
 ```
 
 ### Preserved

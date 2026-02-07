@@ -33,7 +33,7 @@ Agents will now provide detailed explanations for:
 - What alternatives were considered
 - Step-by-step reasoning
 
-Use `/pof:verbose` again to toggle off.
+Use `/pof-verbose` again to toggle off.
 ```
 
 Update `.claude/context/state.json`:
@@ -52,7 +52,7 @@ Agents will now be terse:
 - Decisions without lengthy justification
 - Minimal progress messages
 
-Use `/pof:verbose` again to toggle on.
+Use `/pof-verbose` again to toggle on.
 ```
 
 Update `.claude/context/state.json`:

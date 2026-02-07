@@ -9,21 +9,21 @@ description: Quick reference for POF commands and when to use them.
 
 | Situation | Command | Description |
 |-----------|---------|-------------|
-| **Starting fresh** | `/pof:kickoff` | New project → setup → architecture → build |
-| **Adding a feature** | `/pof:story <story>` | User story → design → implement → commit |
-| **Resuming work** | `/pof:resume` | Continue interrupted workflow |
-| **Check status** | `/pof:progress` | See current phase and next steps |
-| **See all phases** | `/pof:phase-outline` | Full phase structure |
-| **Disagree with suggestion** | `/pof:override` | Override agent recommendation |
-| **See other options** | `/pof:alternatives` | Alternative approaches |
-| **Pause work** | `/pof:abort` | Save state, stop workflow |
-| **More detail** | `/pof:verbose` | Toggle detailed explanations |
+| **Starting fresh** | `/pof-kickoff` | New project → setup → architecture → build |
+| **Adding a feature** | `/pof-story <story>` | User story → design → implement → commit |
+| **Resuming work** | `/pof-resume` | Continue interrupted workflow |
+| **Check status** | `/pof-progress` | See current phase and next steps |
+| **See all phases** | `/pof-phase-outline` | Full phase structure |
+| **Disagree with suggestion** | `/pof-override` | Override agent recommendation |
+| **See other options** | `/pof-alternatives` | Alternative approaches |
+| **Pause work** | `/pof-abort` | Save state, stop workflow |
+| **More detail** | `/pof-verbose` | Toggle detailed explanations |
 
 ## Typical Workflows
 
 ### New Project
 ```
-/pof:kickoff
+/pof-kickoff
 → Git init + answer requirements questions
 → Approve phase outline
 → Architecture phase runs (agents dispatched inline)
@@ -41,7 +41,7 @@ The entire flow is seamless after kickoff — no need to run separate commands b
 
 ### Adding Features (After Initial Setup)
 ```
-/pof:story As a user, I want to export data as CSV
+/pof-story As a user, I want to export data as CSV
 → Review UX recommendations
 → Approve implementation plan
 → Implementation runs (commit per feature)
@@ -50,7 +50,7 @@ The entire flow is seamless after kickoff — no need to run separate commands b
 
 ### Quick Bug Fix
 ```
-/pof:story --quick Fix timezone display in dashboard
+/pof-story --quick Fix timezone display in dashboard
 → Approve plan
 → Implementation + commit
 → Done
@@ -58,7 +58,7 @@ The entire flow is seamless after kickoff — no need to run separate commands b
 
 ### Continuing Next Day
 ```
-/pof:resume
+/pof-resume
 → See where you left off
 → Approve to continue
 → Workflow resumes inline
@@ -96,13 +96,13 @@ POF is for structured development with documentation, not every interaction.
 - `decisions.json` - Decisions made
 - `architecture.md` - Approved architecture
 - `implementation-plan.md` - Current plan
-- `current-story.md` - Active story (if using /pof:story)
+- `current-story.md` - Active story (if using /pof-story)
 
 ## Tips
 
 1. **Be specific in stories** - Include acceptance criteria
 2. **Review plans before approving** - Catch issues early
 3. **Use --quick for small stuff** - Skip UX review when not needed
-4. **Check /pof:progress if lost** - See where you are
+4. **Check /pof-progress if lost** - See where you are
 5. **Stories are archived** - Build project history over time
 6. **Dashboard is optional** - Open it for visibility, close it when not needed

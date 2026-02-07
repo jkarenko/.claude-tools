@@ -295,15 +295,15 @@ Show the user their next-steps options:
 
 | To do this...              | Do this                                  |
 |----------------------------|------------------------------------------|
-| Add a new feature          | `/pof:story As a user, I want...`        |
-| Quick bug fix              | `/pof:story --quick Fix the...`          |
+| Add a new feature          | `/pof-story As a user, I want...`        |
+| Quick bug fix              | `/pof-story --quick Fix the...`          |
 | Push all commits to remote | `git push`                               |
 | Review decisions made      | See `docs/adr/`                          |
 | See project history        | `git log --oneline`                      |
-| See all commands           | `/pof:guide`                             |
+| See all commands           | `/pof-guide`                             |
 
 This conversation can continue — ask questions, add features, or start
-a new conversation any time with `/pof:resume` to pick up where you
+a new conversation any time with `/pof-resume` to pick up where you
 left off.
 ```
 
@@ -330,11 +330,11 @@ Present story completion summary, then show next-steps options:
 
 | To do this...              | Do this                                  |
 |----------------------------|------------------------------------------|
-| Add another feature        | `/pof:story As a user, I want...`        |
-| Quick bug fix              | `/pof:story --quick Fix the...`          |
+| Add another feature        | `/pof-story As a user, I want...`        |
+| Quick bug fix              | `/pof-story --quick Fix the...`          |
 | Push commits to remote     | `git push`                               |
 | See project history        | `git log --oneline`                      |
-| See all commands           | `/pof:guide`                             |
+| See all commands           | `/pof-guide`                             |
 ```
 
 ---

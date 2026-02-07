@@ -75,7 +75,7 @@ If `.claude/context/state.json` doesn't exist:
 
 **Status**: Not started
 
-No POF workflow is currently active. Use `/pof:kickoff` to start a new workflow or `/pof:resume` if there's existing context.
+No POF workflow is currently active. Use `/pof-kickoff` to start a new workflow or `/pof-resume` if there's existing context.
 ```
 
 ## Quick Status
