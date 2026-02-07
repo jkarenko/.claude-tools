@@ -85,7 +85,9 @@ POF is for structured development with documentation, not every interaction.
 - Implementation plans
 - Deployment actions
 
-**Feature-Level Commits**: Every implemented feature gets its own conventional commit (`type(scope): description`), not just one commit at the end.
+**TDD in Development**: Phase 4.2 follows a test-driven cycle: write unit tests first (`pof-test-writer`), then implement to make them pass, then run tests (`pof-test-runner`), then commit. Integration tests are a separate step after all features. E2E is used sparingly and only when relevant.
+
+**Feature-Level Commits**: Every implemented feature gets its own conventional commit (`type(scope): description`), not just one commit at the end. Both test and implementation files are committed together.
 
 **ADRs**: Architecture Decision Records in `docs/adr/`. Created automatically for significant decisions. Permanent documentation of why choices were made.
 

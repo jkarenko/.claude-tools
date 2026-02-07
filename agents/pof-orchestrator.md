@@ -76,6 +76,7 @@ Dispatch to these agents using the **Task tool** (MCP tool invocation, NOT a bas
 | `pof-implementation-planner` | Creating detailed implementation plans |
 | `pof-adr-writer` | Writing ADRs for decisions |
 | `pof-git-committer` | Creating conventional commits |
+| `pof-test-writer` | Writing unit tests before implementation (TDD) |
 | `pof-test-runner` | Running and validating tests |
 | `pof-security-reviewer` | Security analysis |
 | `pof-deployer` | Deployment execution |

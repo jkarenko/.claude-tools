@@ -166,16 +166,28 @@ Present implementation plan to user. **CHECKPOINT** — user must approve the pl
 
 On approval, update state to `4.2`.
 
-**4.2 Iterative Development**
+**4.2 Iterative Development (TDD)**
 
-Read `implementation-plan.md`. For each task in the plan:
+Read `implementation-plan.md`. For each task in the plan, follow a test-driven cycle:
 
-1. **Implement** the feature — write the code yourself in the main conversation
-2. **Test** — dispatch `pof-test-runner` if tests are appropriate
-3. **Commit** — dispatch `pof-git-committer` to create a feature-level conventional commit
-4. **Report** — update dashboard with progress
+1. **Write tests first** — dispatch `pof-test-writer` with the task description and architecture context. It writes unit tests that define expected behavior (these will fail initially).
+2. **Implement** the feature — write the code yourself in the main conversation to make the tests pass.
+3. **Run tests** — dispatch `pof-test-runner` to verify implementation. If tests fail, fix the code and re-run.
+4. **Commit** — dispatch `pof-git-committer` to create a feature-level conventional commit (include both test and implementation files).
+5. **Report** — update dashboard with progress.
 
 Repeat for each task. Keep the user informed with brief progress updates between tasks.
+
+Not every task needs the full TDD cycle — skip `pof-test-writer` for configuration, styling, or trivial changes where unit tests add no value.
+
+**4.2.5 Integration Tests (optional)**
+
+After all tasks in the plan are implemented, consider whether integration tests are warranted. Integration tests are a **separate concern** from the per-feature TDD loop:
+
+- Dispatch `pof-test-runner` with explicit instructions to run integration tests (e.g., `npm run test:integration`)
+- Only if the project has integration test infrastructure set up
+- Focus on cross-component or cross-service boundaries
+- Do not block on this — if no integration test setup exists, note it and move on
 
 **4.3 Security Review**
 

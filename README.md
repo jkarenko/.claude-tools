@@ -93,11 +93,11 @@ A workflow system for orchestrated project development. POF manages multi-phase 
 │  │ planner              │    ─► CHECKPOINT 4.1                       │
 │  └──────────────────────┘                                           │
 │                                                                      │
-│  For each task in plan:                                              │
-│  ┌──────────┐   ┌─────────────┐   ┌───────────────┐                │
-│  │ Write    │──►│ test-runner  │──►│ git-committer  │               │
-│  │ code     │   │ (validate)   │   │ (feature commit)│               │
-│  └──────────┘   └─────────────┘   └───────────────┘                │
+│  For each task in plan (TDD):                                        │
+│  ┌─────────────┐  ┌──────────┐  ┌─────────────┐  ┌──────────────┐ │
+│  │ test-writer  │─►│ Write    │─►│ test-runner  │─►│ git-committer │ │
+│  │ (tests first)│  │ code     │  │ (verify)     │  │ (commit)      │ │
+│  └─────────────┘  └──────────┘  └─────────────┘  └──────────────┘ │
 │                                                                      │
 │  ┌───────────────────┐                                              │
 │  │ security-reviewer  │──► Review all changes                        │
@@ -121,6 +121,7 @@ A workflow system for orchestrated project development. POF manages multi-phase 
 ### Key Design Principles
 
 - **Inline orchestration**: All phases run in the main conversation where the user can interact. Specialist agents are dispatched for focused work and return results.
+- **TDD development cycle**: Phase 4.2 follows test-driven development: write unit tests first, implement to make them pass, verify, commit. Integration tests are a separate step. E2E is used sparingly.
 - **Feature-level commits**: Every feature gets its own conventional commit (`type(scope): description`), not one big commit at the end.
 - **Git from the start**: `git init` happens at kickoff. Context files are committed immediately.
 - **Dashboard is optional**: Real-time monitoring at `localhost:3456`. Agents report progress via `curl` that silently no-ops if the dashboard isn't running.
@@ -157,7 +158,7 @@ Parse story ─► Load project context
 └─────────────┘    └──────────┬───────────┘
                               │ user approves plan
                               ▼
-              For each task: code ─► test ─► commit
+              For each task: write test ─► code ─► run test ─► commit
                               │
                               ▼
               Security review ─► Archive story ─► Done
@@ -184,7 +185,7 @@ Parse story ─► Load project context
 | `/pof:rollback` | Show rollback options |
 | `/pof:guide` | Quick reference for all commands |
 
-### POF Agents (13)
+### POF Agents (14)
 
 | Agent | Purpose | Auto-accept |
 |-------|---------|-------------|
@@ -195,6 +196,7 @@ Parse story ─► Load project context
 | `pof-implementation-planner` | Task breakdown and sequencing | No |
 | `pof-scaffolder` | Project structure initialization | No |
 | `pof-git-committer` | Conventional commits | Yes (commit) |
+| `pof-test-writer` | Write unit tests before implementation (TDD) | Yes |
 | `pof-test-runner` | Test execution and reporting | Yes |
 | `pof-security-reviewer` | Security vulnerability analysis | No |
 | `pof-deployer` | Deployment to infrastructure | No |

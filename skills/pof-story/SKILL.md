@@ -100,16 +100,18 @@ Update `.claude/context/state.json`:
 }
 ```
 
-**Continue with implementation inline** — follow the `/pof:orchestrate` Phase 4.2 instructions:
+**Continue with implementation inline** — follow the `/pof:orchestrate` Phase 4.2 TDD instructions:
 
 1. Read `implementation-plan.md`
-2. For each task in the plan:
-   - Implement the feature (write code in this conversation)
-   - Dispatch `pof-test-runner` if tests apply
+2. For each task in the plan (TDD cycle):
+   - Dispatch `pof-test-writer` to write unit tests first (skip for config/styling/trivial tasks)
+   - Implement the feature (write code in this conversation to make tests pass)
+   - Dispatch `pof-test-runner` to verify — fix if tests fail
    - Dispatch `pof-git-committer` for a feature-level conventional commit
    - Report progress to dashboard
-3. After all tasks: dispatch `pof-security-reviewer`
-4. Present completion summary
+3. After all tasks: run integration tests if applicable (separate concern)
+4. Dispatch `pof-security-reviewer`
+5. Present completion summary
 
 **Do not** spawn a `pof-orchestrator` subagent. Run everything inline in this conversation.
 

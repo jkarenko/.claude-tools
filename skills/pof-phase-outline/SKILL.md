@@ -36,8 +36,9 @@ Display the complete POF phase structure for reference.
 
 ### PHASE 4: IMPLEMENTATION
 ├── 4.1 Implementation planning → **CHECKPOINT**
-├── 4.2 Development cycles
-│   └── Per feature: code → test → COMMIT
+├── 4.2 Development cycles (TDD)
+│   └── Per feature: write test → implement → run test → COMMIT
+├── 4.2.5 Integration tests (optional, separate concern)
 ├── 4.3 Security review
 └── 4.4 Implementation approval → **CHECKPOINT**
 
