@@ -1,0 +1,44 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Poetry(:*)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  },
+  "model": "fable",
+  "worktree": {
+    "baseRef": "fresh"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "input=$(cat); printf '%s@%s:%s %s $ ' \"$(whoami)\" \"$(hostname -s)\" \"$(basename \"$(echo \"$input\" | jq -r '.workspace.current_dir')\")\" \"$(echo \"$input\" | jq -r '.model.display_name')\""
+  },
+  "enabledPlugins": {
+    "ralph-loop@claude-plugins-official": false,
+    "figma@claude-plugins-official": true,
+    "atlassian@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-code-warp": {
+      "source": {
+        "source": "github",
+        "repo": "warpdotdev/claude-code-warp"
+      }
+    }
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "xhigh",
+  "askUserQuestionTimeout": "never",
+  "tui": "fullscreen",
+  "theme": "light",
+  "editorMode": "normal",
+  "preferredNotifChannel": "auto",
+  "autoScrollEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "useAutoModeDuringPlan": true
+}

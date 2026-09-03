@@ -1,0 +1,36 @@
+[project]
+name = "auto-transcribe"
+version = "1.0.0"
+description = "High-quality audio transcription with speaker diarization and AI-powered template filling"
+requires-python = ">=3.10"
+dependencies = [
+    # Transcription
+    "mlx-whisper>=0.4.0",
+    "openai>=1.0.0",
+    # Audio processing
+    "librosa>=0.10.0",
+    "pydub>=0.25.0",
+    "soundfile>=0.12.0",
+    # Enhancement
+    "noisereduce>=3.0.0",
+    # Diarization
+    "resemblyzer>=0.1.3",
+    "scikit-learn>=1.3.0",
+    # Utilities
+    "pyyaml>=6.0",
+    "numpy>=1.24.0",
+    "webvtt-py>=0.5.0",
+    "watchdog>=3.0.0",
+    "anthropic>=0.77.0",
+    "speechbrain>=1.1.0",
+    "torchaudio>=2.11.0",
+]
+
+[project.optional-dependencies]
+full = [
+    "deepfilternet>=0.5.0",
+    "torch>=2.0.0",
+]
+
+[tool.uv]
+dev-dependencies = []
